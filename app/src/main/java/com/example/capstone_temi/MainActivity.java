@@ -1,89 +1,62 @@
 package com.example.capstone_temi;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-
-//import com.robotemi.sdk.NlpResult;
-//import com.robotemi.sdk.Robot;
-//import com.robotemi.sdk.TtsRequest;
-//import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
-//import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
-//import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
-//import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
-//import com.robotemi.sdk.listeners.OnRobotReadyListener;
-
+import android.util.Log;
+import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Button button = findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(MainActivity.this, BotDirectingPage.class);
-                MainActivity.this.startActivity(myIntent);
-            }
-        });
-
-
-
-        Thread commsThread = new Thread(new serverThread());
-        commsThread.start();
-
-
+        // Create a WebSocket. The scheme part can be one of the following:
+        // 'ws', 'wss', 'http' and 'https' (case-insensitive). The user info
+        // part, if any, is interpreted as expected. If a raw socket failed
+        // to be created, an IOException is thrown.
+        Thread myThread = new Thread(new MyServerThread());
+        myThread.start();
     }
 
-    class serverThread implements Runnable
-    {
-        TextView testTV = findViewById(R.id.displayText);
-        Socket s;
-        ServerSocket ss;
-        InputStreamReader isr;
-        BufferedReader br;
+
+    class MyServerThread implements Runnable{
+        private PrintWriter output;
+        private BufferedReader input;
         Handler h = new Handler();
-
         String message;
-
-        @Override
         public void run() {
+            Socket socket;
             try {
-                ss = new ServerSocket(127);
-                while (true){
-                    s = ss.accept();
-                    isr = new InputStreamReader(s.getInputStream());
-                    br = new BufferedReader(isr);
-                    message = br.readLine();
-
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                        testTV.setText(message);
-                        }
-                    });
+                socket = new Socket("10.0.2.2", 8000);
+                output = new PrintWriter(socket.getOutputStream());
+                input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                message = input.readLine();
+                String line = "";
+                while((line = input.readLine()) != null)
+                {
+                    String finalLine = line;
+                    h.post(() -> Toast.makeText(getApplicationContext(), finalLine, Toast.LENGTH_SHORT).show());
                 }
-            }catch (IOException e){
+
+
+
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+
+
 
 //    @Override
 //    public void onPublish(@NonNull ActivityStreamPublishMessage activityStreamPublishMessage) {
