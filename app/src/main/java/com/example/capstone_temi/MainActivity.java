@@ -9,6 +9,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.util.*;
 
@@ -46,14 +57,48 @@ public class MainActivity extends AppCompatActivity
         Uri appLinkData = appLinkIntent.getData();
 
         if(appLinkData != null){
+
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split(":",2 );
             String level = data[0];
             String shelf = data[1];
-            TextView leveltxt = findViewById(R.id.level);
-            TextView shelfnotxt = findViewById(R.id.shelfno);
-            leveltxt.setText("Level: " + level);
-            shelfnotxt.setText("Shelf Number: " + shelf);
+            if(level.equals("3")){
+                TextView leveltxt = findViewById(R.id.level);
+                TextView shelfnotxt = findViewById(R.id.shelfno);
+                leveltxt.setText("Level: " + level);
+                shelfnotxt.setText("Shelf Number: " + shelf);
+
+            }
+            else{
+                String requestUrl = "http://10.0.2.2:10000/wronglevel";
+
+                JSONObject postData = new JSONObject();
+                try {
+                    postData.put("level", level);
+                    postData.put("shelfno", shelf);
+                }catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+                RequestQueue namerequestQueue = Volley.newRequestQueue(MainActivity.this);
+                namerequestQueue.add(jsonObjectRequest);
+
+
+
+
+            }
 
         }
     }
@@ -81,6 +126,7 @@ public class MainActivity extends AppCompatActivity
             if (session.getMethod() == Method.GET) {
                 String shelfno = session.getParameters().get("shelfno").get(0);
                 String level = session.getParameters().get("level").get(0);
+                return newFixedLengthResponse("Requested level = " + level);
             }
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
                     "The requested resource does not exist");
