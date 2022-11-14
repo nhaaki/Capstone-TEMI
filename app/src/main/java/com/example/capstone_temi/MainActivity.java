@@ -1,60 +1,93 @@
 package com.example.capstone_temi;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.AsyncTask;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-public class MainActivity extends AppCompatActivity {
+import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.*;
+import java.util.*;
+
+import fi.iki.elonen.NanoHTTPD;
+
+
+public class MainActivity extends AppCompatActivity
+{
+    private WebServer server;
+    /** Called when the activity is first created. */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Create a WebSocket. The scheme part can be one of the following:
-        // 'ws', 'wss', 'http' and 'https' (case-insensitive). The user info
-        // part, if any, is interpreted as expected. If a raw socket failed
-        // to be created, an IOException is thrown.
-        Thread myThread = new Thread(new MyServerThread());
-        myThread.start();
+        server = new WebServer();
+        try {
+            server.start();
+        } catch (IOException ioe) {
+            Log.w("Httpd", "The server could not start.");
+        }
+        Log.w("Httpd", "Web server initialized.");
+        // ATTENTION: This was auto-generated to handle app links.
+        handleIntent();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent();
+    }
 
-    class MyServerThread implements Runnable{
-        private PrintWriter output;
-        private BufferedReader input;
-        Handler h = new Handler();
-        String message;
-        public void run() {
-            Socket socket;
-            try {
-                socket = new Socket("10.0.2.2", 8000);
-                output = new PrintWriter(socket.getOutputStream());
-                input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                message = input.readLine();
-                String line = "";
-                while((line = input.readLine()) != null)
-                {
-                    String finalLine = line;
-                    h.post(() -> Toast.makeText(getApplicationContext(), finalLine, Toast.LENGTH_SHORT).show());
-                }
+    private void handleIntent(){
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
 
+        if(appLinkData != null){
+            String rawdata = appLinkData.getLastPathSegment();
+            String[] data = rawdata.split(":",2 );
+            String level = data[0];
+            String shelf = data[1];
+            TextView leveltxt = findViewById(R.id.level);
+            TextView shelfnotxt = findViewById(R.id.shelfno);
+            leveltxt.setText("Level: " + level);
+            shelfnotxt.setText("Shelf Number: " + shelf);
 
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
+
+
+    // DON'T FORGET to stop the server
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (server != null)
+            server.stop();
+    }
+
+    private class WebServer extends NanoHTTPD {
+
+        public WebServer()
+        {
+            super(8080);
+        }
+
+        @Override
+        public Response serve(IHTTPSession session) {
+            if (session.getMethod() == Method.GET) {
+                String shelfno = session.getParameters().get("shelfno").get(0);
+                String level = session.getParameters().get("level").get(0);
+            }
+            return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
+                    "The requested resource does not exist");
+        }
+    }
+
+}
 
 
 
@@ -102,4 +135,3 @@ public class MainActivity extends AppCompatActivity {
 //    public void onRobotReady(boolean b) {
 //
 //    }
-}
