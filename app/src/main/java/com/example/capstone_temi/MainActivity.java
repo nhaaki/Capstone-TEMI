@@ -128,6 +128,15 @@ public class MainActivity extends AppCompatActivity
                 String level = session.getParameters().get("level").get(0);
                 return newFixedLengthResponse("Requested level = " + level);
             }
+            if (session.getMethod() == Method.POST) {
+                try {
+                    session.parseBody(new HashMap<>());
+                    String requestBody = session.getQueryParameterString();
+                    return newFixedLengthResponse("Request body = " + requestBody);
+                } catch (IOException | ResponseException e) {
+                    return newFixedLengthResponse(e.getMessage());
+                }
+            }
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
                     "The requested resource does not exist");
         }
