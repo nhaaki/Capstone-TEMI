@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             String[] data = rawdata.split(":",2 );
             String level = data[0];
             String shelf = data[1];
-            if(level.equals("4")){
+            if(level.equals("3")){
                 TextView leveltxt = findViewById(R.id.level);
                 TextView shelfnotxt = findViewById(R.id.shelfno);
                 leveltxt.setText("Level: " + level);
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
 
             }
             else{
-                String requestUrl = "http://192.168.0.112:10000/wronglevel";
+                String requestUrl = "http://192.168.1.84:10000/wronglevel";
 
                 JSONObject postData = new JSONObject();
                 try {
@@ -123,10 +123,16 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public Response serve(IHTTPSession session) {
-            if (session.getMethod() == Method.GET) {
-                String shelfno = session.getParameters().get("shelfno").get(0);
-                String level = session.getParameters().get("level").get(0);
-                return newFixedLengthResponse("Requested level = " + level);
+
+            if (session.getMethod() == Method.POST) {
+                try {
+                    final HashMap<String, String> map = new HashMap<String, String>();
+                    session.parseBody(map);
+                    String data = map.get("postData");
+                    return newFixedLengthResponse(data);
+                } catch (IOException | ResponseException e) {
+                    // handle
+                }
             }
             if (session.getMethod() == Method.POST) {
                 try {
@@ -139,7 +145,10 @@ public class MainActivity extends AppCompatActivity
             }
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
                     "The requested resource does not exist");
+
         }
+
+
     }
 
 }
