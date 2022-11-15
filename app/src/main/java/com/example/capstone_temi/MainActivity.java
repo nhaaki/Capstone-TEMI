@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             String[] data = rawdata.split(":",2 );
             String level = data[0];
             String shelf = data[1];
-            if(level.equals("3")){
+            if(level.equals("4")){
                 TextView leveltxt = findViewById(R.id.level);
                 TextView shelfnotxt = findViewById(R.id.shelfno);
                 leveltxt.setText("Level: " + level);
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
 
             }
             else{
-                String requestUrl = "http://10.0.2.2:10000/wronglevel";
+                String requestUrl = "http://192.168.0.112:10000/wronglevel";
 
                 JSONObject postData = new JSONObject();
                 try {
