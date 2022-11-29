@@ -53,10 +53,10 @@
 
     <TextView
         android:id="@+id/shelfno"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="168dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="163dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="32dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/level" />
