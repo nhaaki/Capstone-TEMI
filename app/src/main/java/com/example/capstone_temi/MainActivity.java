@@ -129,9 +129,16 @@ public class MainActivity extends AppCompatActivity
                     final HashMap<String, String> map = new HashMap<String, String>();
                     session.parseBody(map);
                     String data = map.get("postData");
+
+                    JSONObject json = new JSONObject(data);
+                    TextView leveltxt = findViewById(R.id.level);
+                    TextView shelfnotxt = findViewById(R.id.shelfno);
+                    leveltxt.setText("Level: " + json.getString("level"));
+                    shelfnotxt.setText("Shelf Number: " + json.getString("shelfno"));
                     return newFixedLengthResponse(data);
-                } catch (IOException | ResponseException e) {
+                } catch (IOException | ResponseException | JSONException e) {
                     // handle
+                    e.printStackTrace();
                 }
             }
             if (session.getMethod() == Method.POST) {
