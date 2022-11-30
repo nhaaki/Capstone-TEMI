@@ -1,9 +1,9 @@
 package com.example.capstone_temi;
-import android.app.Activity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -16,12 +16,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.HashMap;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -29,6 +28,10 @@ import fi.iki.elonen.NanoHTTPD;
 public class MainActivity extends AppCompatActivity
 {
     private WebServer server;
+    public String goserver = "http://192.168.0.192:10000";
+    public int portNumber = 8080;
+    public String levelNo = "3";
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity
             String[] data = rawdata.split(":",2 );
             String level = data[0];
             String shelf = data[1];
-            if(level.equals("3")){
+            if(level.equals(levelNo)){
                 TextView leveltxt = findViewById(R.id.level);
                 TextView shelfnotxt = findViewById(R.id.shelfno);
                 leveltxt.setText("Level: " + level);
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
             }
             else{
-                String requestUrl = "http://192.168.1.84:10000/wronglevel";
+                String requestUrl = goserver + "/wronglevel";
 
                 JSONObject postData = new JSONObject();
                 try {
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity
 
         public WebServer()
         {
-            super(8080);
+            super(portNumber);
         }
 
         @Override
@@ -129,12 +132,24 @@ public class MainActivity extends AppCompatActivity
                     final HashMap<String, String> map = new HashMap<String, String>();
                     session.parseBody(map);
                     String data = map.get("postData");
+                    Context ctx=getApplicationContext();
+
+
+                    Intent intent = new Intent(ctx, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
+                    // the activity from a service
+                    intent.setAction(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    startActivity(intent);
+
 
                     JSONObject json = new JSONObject(data);
                     TextView leveltxt = findViewById(R.id.level);
                     TextView shelfnotxt = findViewById(R.id.shelfno);
                     leveltxt.setText("Level: " + json.getString("level"));
                     shelfnotxt.setText("Shelf Number: " + json.getString("shelfno"));
+
+
                     return newFixedLengthResponse(data);
                 } catch (IOException | ResponseException | JSONException e) {
                     // handle
