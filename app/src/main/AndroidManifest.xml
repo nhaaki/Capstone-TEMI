@@ -18,10 +18,10 @@
             android:name=".BotDirectingPage"
             android:exported="false" />
 
-        <!-- <meta-data
+        <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
             android:value="@string/app_name" />
-            -->
+
 
         <activity
             android:name=".MainActivity"
