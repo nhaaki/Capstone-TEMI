@@ -2,11 +2,16 @@ package com.example.capstone_temi;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -15,22 +20,42 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.robotemi.sdk.NlpResult;
+import com.robotemi.sdk.Robot;
+import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
+import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
+import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
+import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
+import com.robotemi.sdk.listeners.OnRobotReadyListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import fi.iki.elonen.NanoHTTPD;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements
+        Robot.NlpListener,
+        OnRobotReadyListener,
+        Robot.ConversationViewAttachesListener,
+        Robot.WakeupWordListener,
+        Robot.ActivityStreamPublishListener,
+        Robot.TtsListener,
+        OnBeWithMeStatusChangedListener,
+        OnGoToLocationStatusChangedListener,
+        OnLocationsUpdatedListener
 {
     private WebServer server;
     public String goserver = "http://192.168.0.192:10000";
     public int portNumber = 8080;
     public String levelNo = "3";
+    private Robot robot;
+
 
     /** Called when the activity is first created. */
     @Override
@@ -106,7 +131,39 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        robot.getInstance().addOnRobotReadyListener(this);
+        robot.getInstance().addNlpListener(this);
+        robot.getInstance().addOnBeWithMeStatusChangedListener(this);
+        robot.getInstance().addOnGoToLocationStatusChangedListener(this);
+        robot.getInstance().addConversationViewAttachesListenerListener(this);
+        robot.getInstance().addWakeupWordListener(this);
+        robot.getInstance().addTtsListener(this);
+        robot.getInstance().addOnLocationsUpdatedListener(this);
+        Button go = findViewById(R.id.go);
+        go.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                robot.goTo("Shelf19");
+            }
+        });
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        robot.getInstance().removeOnRobotReadyListener(this);
+        robot.getInstance().removeNlpListener(this);
+        robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
+        robot.getInstance().removeOnGoToLocationStatusChangedListener(this);
+        robot.getInstance().removeConversationViewAttachesListenerListener(this);
+        robot.getInstance().removeWakeupWordListener(this);
+        robot.getInstance().removeTtsListener(this);
+        robot.getInstance().removeOnLocationsUpdateListener(this);
+    }
 
     // DON'T FORGET to stop the server
     @Override
@@ -115,6 +172,58 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         if (server != null)
             server.stop();
+    }
+
+    @Override
+    public void onPublish(@NonNull ActivityStreamPublishMessage activityStreamPublishMessage) {
+
+    }
+
+    @Override
+    public void onConversationAttaches(boolean b) {
+
+    }
+
+    @Override
+    public void onNlpCompleted(@NonNull NlpResult nlpResult) {
+
+    }
+
+    @Override
+    public void onTtsStatusChanged(@NonNull TtsRequest ttsRequest) {
+
+    }
+
+    @Override
+    public void onWakeupWord(@NonNull String s, int i) {
+
+    }
+
+    @Override
+    public void onBeWithMeStatusChanged(@NonNull String s) {
+
+    }
+
+    @Override
+    public void onGoToLocationStatusChanged(@NonNull String s, @NonNull String s1, int i, @NonNull String s2) {
+
+    }
+
+    @Override
+    public void onLocationsUpdated(@NonNull List<String> list) {
+
+    }
+
+    @Override
+    public void onRobotReady(boolean isReady) {
+        if (isReady) {
+            try {
+                final ActivityInfo activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
+                robot.onStart(activityInfo);
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private class WebServer extends NanoHTTPD {
@@ -175,49 +284,3 @@ public class MainActivity extends AppCompatActivity
 
 }
 
-
-
-//    @Override
-//    public void onPublish(@NonNull ActivityStreamPublishMessage activityStreamPublishMessage) {
-//
-//    }
-//
-//    @Override
-//    public void onConversationAttaches(boolean b) {
-//
-//    }
-//
-//    @Override
-//    public void onNlpCompleted(@NonNull NlpResult nlpResult) {
-//
-//    }
-//
-//    @Override
-//    public void onTtsStatusChanged(@NonNull TtsRequest ttsRequest) {
-//
-//    }
-//
-//    @Override
-//    public void onWakeupWord(@NonNull String s, int i) {
-//
-//    }
-//
-//    @Override
-//    public void onBeWithMeStatusChanged(@NonNull String s) {
-//
-//    }
-//
-//    @Override
-//    public void onGoToLocationStatusChanged(@NonNull String s, @NonNull String s1, int i, @NonNull String s2) {
-//
-//    }
-//
-//    @Override
-//    public void onLocationsUpdated(@NonNull List<String> list) {
-//
-//    }
-//
-//    @Override
-//    public void onRobotReady(boolean b) {
-//
-//    }
