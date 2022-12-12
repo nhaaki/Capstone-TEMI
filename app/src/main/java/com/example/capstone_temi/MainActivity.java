@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements
     public int portNumber = 8080;
     public String levelNo = "3";
     private Robot robot;
+
 
     /** Called when the activity is first created. */
     @Override
@@ -131,28 +134,35 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        Robot.getInstance().addOnRobotReadyListener(this);
-        Robot.getInstance().addNlpListener(this);
-        Robot.getInstance().addOnBeWithMeStatusChangedListener(this);
-        Robot.getInstance().addOnGoToLocationStatusChangedListener(this);
-        Robot.getInstance().addConversationViewAttachesListenerListener(this);
-        Robot.getInstance().addWakeupWordListener(this);
-        Robot.getInstance().addTtsListener(this);
-        Robot.getInstance().addOnLocationsUpdatedListener(this);
-        robot.goTo("Level 3 shelf 19");
+        robot.getInstance().addOnRobotReadyListener(this);
+        robot.getInstance().addNlpListener(this);
+        robot.getInstance().addOnBeWithMeStatusChangedListener(this);
+        robot.getInstance().addOnGoToLocationStatusChangedListener(this);
+        robot.getInstance().addConversationViewAttachesListenerListener(this);
+        robot.getInstance().addWakeupWordListener(this);
+        robot.getInstance().addTtsListener(this);
+        robot.getInstance().addOnLocationsUpdatedListener(this);
+        Button go = findViewById(R.id.go);
+        go.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                robot.goTo("Shelf19");
+            }
+        });
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Robot.getInstance().removeOnRobotReadyListener(this);
-        Robot.getInstance().removeNlpListener(this);
-        Robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
-        Robot.getInstance().removeOnGoToLocationStatusChangedListener(this);
-        Robot.getInstance().removeConversationViewAttachesListenerListener(this);
-        Robot.getInstance().removeWakeupWordListener(this);
-        Robot.getInstance().removeTtsListener(this);
-        Robot.getInstance().removeOnLocationsUpdateListener(this);
+        robot.getInstance().removeOnRobotReadyListener(this);
+        robot.getInstance().removeNlpListener(this);
+        robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
+        robot.getInstance().removeOnGoToLocationStatusChangedListener(this);
+        robot.getInstance().removeConversationViewAttachesListenerListener(this);
+        robot.getInstance().removeWakeupWordListener(this);
+        robot.getInstance().removeTtsListener(this);
+        robot.getInstance().removeOnLocationsUpdateListener(this);
     }
 
     // DON'T FORGET to stop the server
