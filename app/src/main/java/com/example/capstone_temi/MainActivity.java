@@ -28,6 +28,7 @@ import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.map.MapDataModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +42,7 @@ import fi.iki.elonen.NanoHTTPD;
 
 public class MainActivity extends AppCompatActivity implements
         Robot.NlpListener,
-        OnRobotReadyListener,
+//        OnRobotReadyListener,
         Robot.ConversationViewAttachesListener,
         Robot.WakeupWordListener,
         Robot.ActivityStreamPublishListener,
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements
     public String goserver = "http://192.168.0.192:10000";
     public int portNumber = 8080;
     public String levelNo = "3";
-    private Robot robot;
+    public Robot robot;
 
 
     /** Called when the activity is first created. */
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        robot = Robot.getInstance();
+
         server = new WebServer();
         try {
             server.start();
@@ -90,11 +93,12 @@ public class MainActivity extends AppCompatActivity implements
             String[] data = rawdata.split(":",2 );
             String level = data[0];
             String shelf = data[1];
-            if(level.equals(levelNo)){
+            if(level.equals(levelNo)){ 
                 TextView leveltxt = findViewById(R.id.level);
                 TextView shelfnotxt = findViewById(R.id.shelfno);
                 leveltxt.setText("Level: " + level);
                 shelfnotxt.setText("Shelf Number: " + shelf);
+                robot.goTo("shelf"+shelf);
 
             }
             else{
@@ -134,7 +138,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        robot.getInstance().addOnRobotReadyListener(this);
+
+//        robot.getInstance().addOnRobotReadyListener(this);
         robot.getInstance().addNlpListener(this);
         robot.getInstance().addOnBeWithMeStatusChangedListener(this);
         robot.getInstance().addOnGoToLocationStatusChangedListener(this);
@@ -142,20 +147,28 @@ public class MainActivity extends AppCompatActivity implements
         robot.getInstance().addWakeupWordListener(this);
         robot.getInstance().addTtsListener(this);
         robot.getInstance().addOnLocationsUpdatedListener(this);
+        MapDataModel locations = robot.getMapData();
+        Log.v("ur mom", locations.getLocations().toString());
         Button go = findViewById(R.id.go);
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                robot.goTo("Shelf19");
+                robot.goTo("shelf19");
             }
         });
 
+
     }
+
+
+
+
+
 
     @Override
     protected void onStop() {
         super.onStop();
-        robot.getInstance().removeOnRobotReadyListener(this);
+//        robot.getInstance().removeOnRobotReadyListener(this);
         robot.getInstance().removeNlpListener(this);
         robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
         robot.getInstance().removeOnGoToLocationStatusChangedListener(this);
@@ -214,17 +227,17 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    @Override
-    public void onRobotReady(boolean isReady) {
-        if (isReady) {
-            try {
-                final ActivityInfo activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
-                robot.onStart(activityInfo);
-            } catch (PackageManager.NameNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    @Override
+//    public void onRobotReady(boolean isReady) {
+//        if (isReady) {
+//            try {
+//                final ActivityInfo activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
+//                robot.onStart(activityInfo);
+//            } catch (PackageManager.NameNotFoundException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
     private class WebServer extends NanoHTTPD {
 
