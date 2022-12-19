@@ -2,8 +2,6 @@ package com.example.capstone_temi;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +25,6 @@ import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
-import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.map.MapDataModel;
 
 import org.json.JSONException;
@@ -40,7 +37,7 @@ import java.util.List;
 import fi.iki.elonen.NanoHTTPD;
 
 
-public class MainActivity extends AppCompatActivity implements
+public class GuideActivity extends AppCompatActivity implements
         Robot.NlpListener,
 //        OnRobotReadyListener,
         Robot.ConversationViewAttachesListener,
@@ -62,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_guide);
         robot = Robot.getInstance();
 
         server = new WebServer();
@@ -74,31 +71,39 @@ public class MainActivity extends AppCompatActivity implements
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
+        Log.v("ur dad", "oncreate");
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent();
+        Log.v("ur dad", "onnew");
     }
 
     private void handleIntent(){
         Intent appLinkIntent = getIntent();
+
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
-
+        Log.v("ur dad", appLinkIntent.toString());
         if(appLinkData != null){
 
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split(":",2 );
             String level = data[0];
             String shelf = data[1];
-            if(level.equals(levelNo)){ 
+            Log.v("ur dad", appLinkIntent.toString());
+            if(level.equals(levelNo)){
+                Log.v("ur dad", "ABC");
+
                 TextView leveltxt = findViewById(R.id.level);
                 TextView shelfnotxt = findViewById(R.id.shelfno);
                 leveltxt.setText("Level: " + level);
                 shelfnotxt.setText("Shelf Number: " + shelf);
+                appLinkIntent = null;
                 robot.goTo("shelf"+shelf);
+
 
             }
             else{
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 });
 
-                RequestQueue namerequestQueue = Volley.newRequestQueue(MainActivity.this);
+                RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
                 namerequestQueue.add(jsonObjectRequest);
 
 
@@ -257,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements
                     Context ctx=getApplicationContext();
 
 
-                    Intent intent = new Intent(ctx, MainActivity.class);
+                    Intent intent = new Intent(ctx, GuideActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
                     // the activity from a service
                     intent.setAction(Intent.ACTION_MAIN);
