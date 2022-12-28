@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +34,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -115,13 +118,15 @@ public class GuideActivity extends AppCompatActivity implements
             if(level.equals(levelNo)){
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
+                TextView countdown = findViewById(R.id.countdown);
+
 
                 booknametxt.setText(bookName);
                 bookidtxt.setText( bookId);
 
                 appLinkIntent = null;
-                robot.goTo("shelf"+shelfNo);
 
+                robot.goTo("shelf"+shelfNo);
 
             }
             else{
