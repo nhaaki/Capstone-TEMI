@@ -55,6 +55,10 @@ public class GuideActivity extends AppCompatActivity implements
     public String goserver = "http://192.168.0.192:10000";
     public int portNumber = 8080;
     public String levelNo = "3";
+    public String level;
+    public String shelfNo;
+    public String bookId;
+    public String bookName;
     public Robot robot;
 
 
@@ -89,50 +93,40 @@ public class GuideActivity extends AppCompatActivity implements
 
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
-        Log.v("ur dad", appLinkIntent.toString());
         if(appLinkData != null){
 
+            // Get the query string data
+            level = appLinkData.getQueryParameter("level");
+            shelfNo = appLinkData.getQueryParameter("shelfno");
+            String bookname = appLinkData.getQueryParameter("bookname");
+            bookId = appLinkData.getQueryParameter("bookid");
+
+            // Now decode the book name and book id
+            bookName = bookname.replace("_", " ");
+
+
+/*
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split(":",4 );
             String level = data[0];
             String shelf = data[1];
             String bookName = data[2];
             String bookId = data[3];
-            Log.v("ur dad", appLinkIntent.toString());
-            if(level.equals(levelNo)){
-                Log.v("ur dad", "ABC");
 
+ */
+
+            if(level.equals(levelNo)){
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
                 TextView countdown = findViewById(R.id.countdown);
 
 
-                booknametxt.setText("Book Name: " + bookName);
-                bookidtxt.setText("Book ID: " + bookId);
+                booknametxt.setText(bookName);
+                bookidtxt.setText( bookId);
 
                 appLinkIntent = null;
-                robot.goTo("shelf"+shelf);
-                robot.addOnLocationsUpdatedListener(new OnLocationsUpdatedListener() {
-                    @Override
-                    public void onLocationsUpdated(@NonNull List<String> list) {
-                        CountDownTimer waitTimer;
-                        waitTimer = new CountDownTimer(60000, 1000) {
 
-                            public void onTick(long millisUntilFinished) {
-                                int time =  Integer.parseInt(countdown.getText().toString()) - 1;
-                                countdown.setText(String.valueOf(time));
-
-                            }
-
-                            public void onFinish() {
-                                robot.goTo("homebase");
-
-                            }
-                        }.start();
-
-                    }
-                });
-
+                robot.goTo("shelf"+shelfNo);
 
             }
             else{
