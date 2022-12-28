@@ -41,11 +41,11 @@
 
                 <data
                     android:host="temibot.com"
-                    android:pathPrefix="/level/"
+                    android:pathPrefix="/"
                     android:scheme="http" />
                 <data
                     android:host="temibot.com"
-                    android:pathPrefix="/level/"
+                    android:pathPrefix="/"
                     android:scheme="temi" />
             </intent-filter>
         </activity>
