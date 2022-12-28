@@ -6,8 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,8 +38,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.TreeMap;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -60,6 +63,7 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookId;
     public String bookName;
     public Robot robot;
+    public Boolean answer = true;
 
 
     /** Called when the activity is first created. */
@@ -68,6 +72,10 @@ public class GuideActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
         robot = Robot.getInstance();
+
+
+
+
 
         server = new WebServer();
         try {
@@ -78,6 +86,8 @@ public class GuideActivity extends AppCompatActivity implements
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
+
+
     }
 
     @Override
@@ -114,7 +124,7 @@ public class GuideActivity extends AppCompatActivity implements
             if(level.equals(levelNo)){
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
-                TextView countdown = findViewById(R.id.countdown);
+
 
 
                 booknametxt.setText(bookName);
@@ -122,24 +132,29 @@ public class GuideActivity extends AppCompatActivity implements
 
                 appLinkIntent = null;
 
+
+
                 robot.goTo("shelf"+shelfNo);
-                robot.addOnLocationsUpdatedListener(new OnLocationsUpdatedListener() {
+                robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
                     @Override
-                    public void onLocationsUpdated(@NonNull List<String> list) {
-                        CountDownTimer waitTimer;
-                        waitTimer = new CountDownTimer(60000, 1000) {
+                    public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                        Log.v("ur mom", status);
 
-                            public void onTick(long millisUntilFinished) {
-                                int time =  Integer.parseInt(countdown.getText().toString()) - 1;
-                                countdown.setText(String.valueOf(time));
+                        if(!location.equals("home base")){
 
-                            }
+                            if(status.equals("complete")){
+                                popup();
 
-                            public void onFinish() {
-                                robot.goTo("homebase");
+
 
                             }
-                        }.start();
+                        }
+
+
+
+
+
+
 
                     }
                 });
@@ -177,6 +192,77 @@ public class GuideActivity extends AppCompatActivity implements
             }
 
         }
+    }
+
+    public void startcountdown(TextView countdown){
+
+    }
+
+    public void popup() {
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
+        View popupView = inflater.inflate(R.layout.popup, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+
+        Button yes = popupView.findViewById(R.id.yes);
+        Button no = popupView.findViewById(R.id.no);
+        answer = true;
+
+
+        CountDownTimer waitTimer;
+        TextView countdown = popupView.findViewById(R.id.timer);
+        waitTimer = new CountDownTimer(60000, 1000) {
+
+
+
+            public void onTick(long millisUntilFinished) {
+                int time =  Integer.parseInt(countdown.getText().toString()) - 1;
+                countdown.setText(String.valueOf(time));
+
+            }
+
+            public void onFinish() {
+
+                if(answer == true){
+                    robot.goTo("home base");
+                }
+
+            }
+        }.start();
+
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("sg.edu.np.mad.browser");
+                if (launchIntent != null) {
+                    startActivity(launchIntent);//null pointer check in case package name was not found
+                }
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupWindow.dismiss();
+                robot.goTo("home base");
+                answer = false;
+            }
+        });
+
+
+
+
+
+
     }
 
     @Override
