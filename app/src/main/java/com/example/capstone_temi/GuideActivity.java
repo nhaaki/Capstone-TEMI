@@ -90,17 +90,25 @@ public class GuideActivity extends AppCompatActivity implements
         if(appLinkData != null){
 
             String rawdata = appLinkData.getLastPathSegment();
-            String[] data = rawdata.split(":",2 );
+            String[] data = rawdata.split(":",4 );
             String level = data[0];
             String shelf = data[1];
+            String bookName = data[2];
+            String bookId = data[3];
             Log.v("ur dad", appLinkIntent.toString());
             if(level.equals(levelNo)){
                 Log.v("ur dad", "ABC");
 
                 TextView leveltxt = findViewById(R.id.level);
                 TextView shelfnotxt = findViewById(R.id.shelfno);
+                //TextView booknametxt = findViewById(R.id.book_name);
+                //TextView bookidtxt = findViewById(R.id.book_id);
+
                 leveltxt.setText("Level: " + level);
                 shelfnotxt.setText("Shelf Number: " + shelf);
+                //booknametxt.setText("Book Name: " + bookName);
+                //bookidtxt.setText("Book ID: " + bookId);
+
                 appLinkIntent = null;
                 robot.goTo("shelf"+shelf);
 
