@@ -158,7 +158,7 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().addOnLocationsUpdatedListener(this);
         MapDataModel locations = robot.getMapData();
         Log.v("ur mom", locations.getLocations().toString());
-        
+
 
 
     }
