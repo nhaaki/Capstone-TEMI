@@ -99,15 +99,11 @@ public class GuideActivity extends AppCompatActivity implements
             if(level.equals(levelNo)){
                 Log.v("ur dad", "ABC");
 
-                TextView leveltxt = findViewById(R.id.level);
-                TextView shelfnotxt = findViewById(R.id.shelfno);
-                //TextView booknametxt = findViewById(R.id.book_name);
-                //TextView bookidtxt = findViewById(R.id.book_id);
+                TextView booknametxt = findViewById(R.id.book_name);
+                TextView bookidtxt = findViewById(R.id.book_id);
 
-                leveltxt.setText("Level: " + level);
-                shelfnotxt.setText("Shelf Number: " + shelf);
-                //booknametxt.setText("Book Name: " + bookName);
-                //bookidtxt.setText("Book ID: " + bookId);
+                booknametxt.setText("Book Name: " + bookName);
+                bookidtxt.setText("Book ID: " + bookId);
 
                 appLinkIntent = null;
                 robot.goTo("shelf"+shelf);
@@ -162,13 +158,7 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().addOnLocationsUpdatedListener(this);
         MapDataModel locations = robot.getMapData();
         Log.v("ur mom", locations.getLocations().toString());
-        Button go = findViewById(R.id.go);
-        go.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                robot.goTo("shelf19");
-            }
-        });
+        
 
 
     }
@@ -279,10 +269,6 @@ public class GuideActivity extends AppCompatActivity implements
 
 
                     JSONObject json = new JSONObject(data);
-                    TextView leveltxt = findViewById(R.id.level);
-                    TextView shelfnotxt = findViewById(R.id.shelfno);
-                    leveltxt.setText("Level: " + json.getString("level"));
-                    shelfnotxt.setText("Shelf Number: " + json.getString("shelfno"));
 
 
                     return newFixedLengthResponse(data);
