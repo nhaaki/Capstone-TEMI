@@ -123,6 +123,26 @@ public class GuideActivity extends AppCompatActivity implements
                 appLinkIntent = null;
 
                 robot.goTo("shelf"+shelfNo);
+                robot.addOnLocationsUpdatedListener(new OnLocationsUpdatedListener() {
+                    @Override
+                    public void onLocationsUpdated(@NonNull List<String> list) {
+                        CountDownTimer waitTimer;
+                        waitTimer = new CountDownTimer(60000, 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                                int time =  Integer.parseInt(countdown.getText().toString()) - 1;
+                                countdown.setText(String.valueOf(time));
+
+                            }
+
+                            public void onFinish() {
+                                robot.goTo("homebase");
+
+                            }
+                        }.start();
+
+                    }
+                });
 
             }
             else{
