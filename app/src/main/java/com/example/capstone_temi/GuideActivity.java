@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +34,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -101,12 +104,34 @@ public class GuideActivity extends AppCompatActivity implements
 
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
+                TextView countdown = findViewById(R.id.countdown);
+
 
                 booknametxt.setText("Book Name: " + bookName);
                 bookidtxt.setText("Book ID: " + bookId);
 
                 appLinkIntent = null;
                 robot.goTo("shelf"+shelf);
+                robot.addOnLocationsUpdatedListener(new OnLocationsUpdatedListener() {
+                    @Override
+                    public void onLocationsUpdated(@NonNull List<String> list) {
+                        CountDownTimer waitTimer;
+                        waitTimer = new CountDownTimer(60000, 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                                int time =  Integer.parseInt(countdown.getText().toString()) - 1;
+                                countdown.setText(String.valueOf(time));
+
+                            }
+
+                            public void onFinish() {
+                                robot.goTo("homebase");
+
+                            }
+                        }.start();
+
+                    }
+                });
 
 
             }
