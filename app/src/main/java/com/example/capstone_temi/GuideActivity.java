@@ -135,7 +135,7 @@ public class GuideActivity extends AppCompatActivity implements
                 JSONObject postData = new JSONObject();
                 try {
                     postData.put("level", level);
-                    postData.put("shelfno", shelf);
+                    postData.put("shelfno", shelfNo);
                 }catch (JSONException e)
                 {
                     e.printStackTrace();
