@@ -22,53 +22,54 @@
 
         -->
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Level 3, Shelf 5"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <TextView
+        android:id="@+id/book_name"
+        android:layout_width="245dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="40dp"
+        android:text="[Book Name]"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/book_id"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.833" />
 
     <TextView
-        android:id="@+id/displayText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TESTING"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        android:id="@+id/book_id"
+        android:layout_width="245dp"
+        android:layout_height="98dp"
+        android:layout_marginBottom="88dp"
+        android:text="[Book ID]"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/countdown_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="167dp"
-        android:layout_marginTop="140dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/countdown"
+        android:layout_width="245dp"
+        android:layout_height="98dp"
+        android:layout_marginBottom="128dp"
+        android:text="30"
+        android:textAlignment="center"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/shelfno"
-        android:layout_width="163dp"
-        android:layout_height="21dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="32dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/level" />
-
-    <Button
-        android:id="@+id/go"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="155dp"
-        android:layout_marginTop="82dp"
-        android:text="go"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        android:id="@+id/countdown_text"
+        android:layout_width="240dp"
+        android:layout_height="48dp"
+        android:text="Return to Home Base in"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/countdown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
