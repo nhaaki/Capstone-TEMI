@@ -78,14 +78,12 @@ public class GuideActivity extends AppCompatActivity implements
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
-        Log.v("ur dad", "oncreate");
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent();
-        Log.v("ur dad", "onnew");
     }
 
     private void handleIntent(){
@@ -94,7 +92,7 @@ public class GuideActivity extends AppCompatActivity implements
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
         if(appLinkData != null){
-
+/*
             // Get the query string data
             level = appLinkData.getQueryParameter("level");
             shelfNo = appLinkData.getQueryParameter("shelfno");
@@ -104,16 +102,14 @@ public class GuideActivity extends AppCompatActivity implements
             // Now decode the book name and book id
             bookName = bookname.replace("_", " ");
 
-
-/*
-            String rawdata = appLinkData.getLastPathSegment();
-            String[] data = rawdata.split(":",4 );
-            String level = data[0];
-            String shelf = data[1];
-            String bookName = data[2];
-            String bookId = data[3];
-
  */
+
+            String rawdata = appLinkData.getLastPathSegment();
+            String[] data = rawdata.split(";",4 );
+            level = data[0];
+            shelfNo = data[1];
+            bookName = data[2];
+            bookId = data[3];
 
             if(level.equals(levelNo)){
                 TextView booknametxt = findViewById(R.id.book_name);
@@ -176,14 +172,8 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().addTtsListener(this);
         robot.getInstance().addOnLocationsUpdatedListener(this);
         MapDataModel locations = robot.getMapData();
-        Log.v("ur mom", locations.getLocations().toString());
-
-
 
     }
-
-
-
 
 
 
