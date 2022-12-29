@@ -57,11 +57,11 @@ public class GuideActivity extends AppCompatActivity implements
     private WebServer server;
     public String goserver = "http://192.168.0.192:10000";
     public int portNumber = 8080;
-    public String levelNo = "3";
-    public String level;
-    public String shelfNo;
-    public String bookId;
-    public String bookName;
+    public String levelNo = "3"; //TEMI current level
+    public String level; // Level from the req URL
+    public String shelfNo; // Shelf No from the req URL
+    public String bookId; // Bookid from the req URL
+    public String bookName; // BookName from the req URL
     public Robot robot;
     public Boolean answer = true;
 
@@ -72,11 +72,6 @@ public class GuideActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
         robot = Robot.getInstance();
-
-
-
-
-
         server = new WebServer();
         try {
             server.start();
@@ -86,8 +81,6 @@ public class GuideActivity extends AppCompatActivity implements
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
-
-
     }
 
     @Override
@@ -102,8 +95,9 @@ public class GuideActivity extends AppCompatActivity implements
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
         if(appLinkData != null){
-/*
+
             // Get the query string data
+/*
             level = appLinkData.getQueryParameter("level");
             shelfNo = appLinkData.getQueryParameter("shelfno");
             String bookname = appLinkData.getQueryParameter("bookname");
@@ -114,6 +108,7 @@ public class GuideActivity extends AppCompatActivity implements
 
  */
 
+            // http://temibot.com/level/3;1;Michelle_Obama's_Life;E909O24O12PB
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split(";",4 );
             level = data[0];
@@ -125,48 +120,35 @@ public class GuideActivity extends AppCompatActivity implements
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
 
-
-
                 booknametxt.setText(bookName);
                 bookidtxt.setText( bookId);
 
                 appLinkIntent = null;
 
-
-
                 robot.goTo("shelf"+shelfNo);
                 robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
                     @Override
                     public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
-                        Log.v("ur mom", status);
-
+                       // If the TEMI is not returned to the home base yet
                         if(!location.equals("home base")){
-
                             if(status.equals("complete")){
                                 popup();
-
-
-
                             }
                         }
-
-
-
-
-
-
-
                     }
                 });
-
             }
+
+            // For different Level TEMIs
             else{
                 String requestUrl = goserver + "/wronglevel";
-
                 JSONObject postData = new JSONObject();
                 try {
                     postData.put("level", level);
                     postData.put("shelfno", shelfNo);
+                    postData.put("bookid", bookId);
+                    postData.put("bookname", bookName);
+
                 }catch (JSONException e)
                 {
                     e.printStackTrace();
@@ -186,16 +168,9 @@ public class GuideActivity extends AppCompatActivity implements
                 RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
                 namerequestQueue.add(jsonObjectRequest);
 
-
-
-
             }
 
         }
-    }
-
-    public void startcountdown(TextView countdown){
-
     }
 
     public void popup() {
@@ -222,8 +197,6 @@ public class GuideActivity extends AppCompatActivity implements
         CountDownTimer waitTimer;
         TextView countdown = popupView.findViewById(R.id.timer);
         waitTimer = new CountDownTimer(60000, 1000) {
-
-
 
             public void onTick(long millisUntilFinished) {
                 int time =  Integer.parseInt(countdown.getText().toString()) - 1;
@@ -258,17 +231,11 @@ public class GuideActivity extends AppCompatActivity implements
             }
         });
 
-
-
-
-
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
 //        robot.getInstance().addOnRobotReadyListener(this);
         robot.getInstance().addNlpListener(this);
         robot.getInstance().addOnBeWithMeStatusChangedListener(this);
