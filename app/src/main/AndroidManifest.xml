@@ -27,7 +27,7 @@
             android:name=".GuideActivity"
             android:exported="true"
             android:launchMode="singleInstancePerTask">
-
+            <!--android:launchMode="singleInstancePerTask" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

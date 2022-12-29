@@ -36,6 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -96,32 +98,44 @@ public class GuideActivity extends AppCompatActivity implements
         Uri appLinkData = appLinkIntent.getData();
         if(appLinkData != null){
 
-            // Get the query string data
-/*
-            level = appLinkData.getQueryParameter("level");
-            shelfNo = appLinkData.getQueryParameter("shelfno");
-            String bookname = appLinkData.getQueryParameter("bookname");
-            bookId = appLinkData.getQueryParameter("bookid");
+            // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
+            String rawdata = appLinkData.getLastPathSegment();
+            String[] data = rawdata.split("&",4 );
 
-            // Now decode the book name and book id
-            bookName = bookname.replace("_", " ");
+            for (int i =0; i < 4; i++) {
+                String[] dataPair = data[i].split("=", 2);
+                String key = dataPair[0];
+                if (key.equals("level")) {
+                    level = dataPair[1];
+                }
+                else if (key.equals("shelfno")) {
+                    shelfNo = dataPair[1];
+                }
+                else if (key.equals("bookid")) {
+                    bookId = dataPair[1];
+                }
+                else if (key.equals("bookname")) {
+                    bookName = dataPair[1].replace("~", "&");
+                }
+            }
 
- */
+ /*
 
-            // http://temibot.com/level/3;1;Michelle_Obama's_Life;E909O24O12PB
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split(";",4 );
             level = data[0];
             shelfNo = data[1];
             bookName = data[2];
             bookId = data[3];
+  */
+
 
             if(level.equals(levelNo)){
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
 
                 booknametxt.setText(bookName);
-                bookidtxt.setText( bookId);
+                bookidtxt.setText(bookId);
 
                 appLinkIntent = null;
 
@@ -216,8 +230,10 @@ public class GuideActivity extends AppCompatActivity implements
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                answer = false;
                 Intent launchIntent = getPackageManager().getLaunchIntentForPackage("sg.edu.np.mad.browser");
                 if (launchIntent != null) {
+                    Log.w("jy", "your mum");
                     startActivity(launchIntent);//null pointer check in case package name was not found
                 }
             }
@@ -225,6 +241,8 @@ public class GuideActivity extends AppCompatActivity implements
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("sg.edu.np.mad.browser");
+                startActivity(launchIntent);
                 popupWindow.dismiss();
                 robot.goTo("home base");
                 answer = false;
