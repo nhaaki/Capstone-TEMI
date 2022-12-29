@@ -14,6 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CapstoneTEMI"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
@@ -27,11 +40,8 @@
             android:name=".GuideActivity"
             android:exported="true"
             android:launchMode="singleInstancePerTask">
-            <!--android:launchMode="singleInstancePerTask" -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+
+            <!-- android:launchMode="singleInstancePerTask" -->
 
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

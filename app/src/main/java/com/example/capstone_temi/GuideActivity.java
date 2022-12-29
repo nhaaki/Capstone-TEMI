@@ -231,7 +231,7 @@ public class GuideActivity extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 answer = false;
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("sg.edu.np.mad.browser");
+                Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                 if (launchIntent != null) {
                     Log.w("jy", "your mum");
                     startActivity(launchIntent);//null pointer check in case package name was not found
@@ -241,7 +241,7 @@ public class GuideActivity extends AppCompatActivity implements
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("sg.edu.np.mad.browser");
+                Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                 startActivity(launchIntent);
                 popupWindow.dismiss();
                 robot.goTo("home base");
