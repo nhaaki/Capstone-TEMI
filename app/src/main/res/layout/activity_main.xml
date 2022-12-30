@@ -54,16 +54,6 @@
         app:layout_constraintStart_toEndOf="@+id/takePhotoBut"
         app:layout_constraintTop_toBottomOf="@+id/webView" />
 
-    <ImageView
-        android:id="@+id/personImage"
-        android:layout_width="199dp"
-        android:layout_height="195dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/webView"
-        tools:srcCompat="@tools:sample/avatars" />
-
     <Button
         android:id="@+id/dance"
         android:layout_width="wrap_content"
@@ -78,10 +68,10 @@
         android:id="@+id/face"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="62dp"
         android:text="Face"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/personImage"
+        app:layout_constraintEnd_toStartOf="@+id/picture"
         app:layout_constraintTop_toBottomOf="@+id/webView" />
 
     <TextView
@@ -94,5 +84,15 @@
         app:layout_constraintStart_toEndOf="@+id/sendBut"
         app:layout_constraintTop_toBottomOf="@+id/webView"
         tools:textSize="34sp" />
+
+    <ImageView
+        android:id="@+id/picture"
+        android:layout_width="219dp"
+        android:layout_height="141dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="41dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/webView"
+        app:srcCompat="@color/purple_200" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
