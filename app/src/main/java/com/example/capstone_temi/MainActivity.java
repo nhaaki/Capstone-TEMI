@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
     public ImageView imageSending;
     public TextView name;
 
-    public Button reload;
-    public Button back;
+    public ImageButton reload;
+    public ImageButton back;
     public Bitmap imageReceived;
 
 

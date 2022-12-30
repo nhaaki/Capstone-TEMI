@@ -205,7 +205,7 @@ public class GuideActivity extends AppCompatActivity implements
 
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+        popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.BOTTOM, 0, 0);
 
         Button yes = popupView.findViewById(R.id.yes);
         Button no = popupView.findViewById(R.id.no);

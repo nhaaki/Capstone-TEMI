@@ -20,7 +20,9 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="">
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -46,7 +48,8 @@
         <activity
             android:name=".GuideActivity"
             android:exported="true"
-            android:launchMode="singleInstancePerTask">
+            android:launchMode="singleInstancePerTask"
+            android:label="">
 
             <!-- android:launchMode="singleInstancePerTask" -->
 
