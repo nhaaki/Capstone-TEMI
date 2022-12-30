@@ -1,7 +1,11 @@
 package com.example.capstone_temi;
 
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +15,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.robotemi.sdk.Robot;
@@ -39,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_PIC_REQUEST = 1337;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         // For level 2 feature showcase
         takePhotoButton = (Button) findViewById(R.id.takePhotoBut);
         sendBut = (Button) findViewById(R.id.sendBut);
-        imageSending = (ImageView) findViewById(R.id.personImage);
+        imageSending = (ImageView) findViewById(R.id.picture);
 
         reload = (Button) findViewById(R.id.refresh);
         back = (Button) findViewById(R.id.back);
@@ -59,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
         robot = Robot.getInstance();
 
         name = findViewById(R.id.name);
-
-
 
 
         Button dance = findViewById(R.id.dance);
@@ -76,17 +81,16 @@ public class MainActivity extends AppCompatActivity {
                 robot.tiltBy(55, 1);
 
 
-
                 robot.addOnMovementStatusChangedListener(new OnMovementStatusChangedListener() {
                     @Override
                     public void onMovementStatusChanged(@NonNull String type, @NonNull String status) {
 
                         int times = 0;
 
-                        if(type.equals("turnBy")){
-                            if(status.equals("complete")){
+                        if (type.equals("turnBy")) {
+                            if (status.equals("complete")) {
                                 times += 1;
-                                if(times == 2){
+                                if (times == 2) {
                                     robot.stopMovement();
                                 }
                             }
@@ -98,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         this.webView = (WebView) findViewById(R.id.webView);
 
         WebSettings webSettings = webView.getSettings();
@@ -108,13 +111,30 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(webViewClient);
         webView.loadUrl(url);
 
+        ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            Bitmap image = (Bitmap) data.getExtras().get("data");
+                            imageSending.setImageBitmap(image);
+
+
+                        }
+
+                    }
+                });
+
         // For level 2 showcase
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivity(intent);
+                imageActivityResultLauncher.launch(intent);
             }
+
         });
 
 
@@ -157,21 +177,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_PIC_REQUEST) {
-            Bitmap image = (Bitmap) data.getExtras().get("data");
-            imageSending.setImageBitmap(image);
-        }
-    }
-
-
-
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == CAMERA_PIC_REQUEST) {
+//            Bitmap image = (Bitmap) data.getExtras().get("data");
+//            imageSending.setImageBitmap(image);
+//        }
+//    }
 
 
 }
