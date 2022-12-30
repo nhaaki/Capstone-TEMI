@@ -25,14 +25,14 @@
 
     <TextView
         android:id="@+id/book_name"
-        android:layout_width="245dp"
-        android:layout_height="100dp"
+        android:layout_width="700dp"
+        android:layout_height="250dp"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="40dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="@font/ubuntu_bold"
         android:text="[Book Name]"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="70sp"
         app:layout_constraintBottom_toTopOf="@+id/book_id"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,12 +41,13 @@
 
     <TextView
         android:id="@+id/book_id"
-        android:layout_width="245dp"
+        android:layout_width="700dp"
         android:layout_height="98dp"
         android:layout_marginTop="62dp"
         android:text="[Book ID]"
+        android:fontFamily="@font/ubuntu_italic"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/book_name" />

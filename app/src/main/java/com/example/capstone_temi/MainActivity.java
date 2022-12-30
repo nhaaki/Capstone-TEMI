@@ -8,6 +8,7 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     public Button sendBut;
     public ImageView imageSending;
     public TextView name;
-    public Button reload;
-    public Button back;
+    public ImageButton reload;
+    public ImageButton back;
 
     private static final int CAMERA_PIC_REQUEST = 1337;
 
@@ -53,12 +54,11 @@ public class MainActivity extends AppCompatActivity {
         sendBut = (Button) findViewById(R.id.sendBut);
         imageSending = (ImageView) findViewById(R.id.personImage);
 
-        reload = (Button) findViewById(R.id.refresh);
-        back = (Button) findViewById(R.id.back);
+        reload = (ImageButton) findViewById(R.id.refresh);
+        back = (ImageButton) findViewById(R.id.back);
 
         robot = Robot.getInstance();
 
-        name = findViewById(R.id.name);
 
 
 
@@ -131,33 +131,6 @@ public class MainActivity extends AppCompatActivity {
                 webView.goBack();
             }
         });
-
-        Button face = findViewById(R.id.face);
-
-        robot.addOnFaceRecognizedListener(new OnFaceRecognizedListener() {
-            @Override
-            public void onFaceRecognized(@NonNull List<ContactModel> list) {
-
-                Log.v("urmum", "suck");
-
-
-                name.setText(list.get(0).getFirstName() + " " + list.get(0).getLastName());
-                robot.stopFaceRecognition();
-
-            }
-        });
-
-        face.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Log.v("urmum", "jkdn");
-            }
-        });
-
-
-
-
     }
 
 
