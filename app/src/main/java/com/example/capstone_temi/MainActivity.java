@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -23,11 +24,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.face.ContactModel;
 import com.robotemi.sdk.face.OnFaceRecognizedListener;
 import com.robotemi.sdk.listeners.OnMovementStatusChangedListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 
@@ -38,12 +49,15 @@ public class MainActivity extends AppCompatActivity {
     public String url = "https://chen-han-np.github.io/Capstone-TEMI-Website-Demo/";
     public Robot robot;
 
+    public String goserver = "http://192.168.0.112:10000";
+
     public Button takePhotoButton;
     public Button sendBut;
     public ImageView imageSending;
     public TextView name;
     public Button reload;
     public Button back;
+    public Bitmap imageReceived;
 
     private static final int CAMERA_PIC_REQUEST = 1337;
 
@@ -118,12 +132,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            Bitmap image = (Bitmap) data.getExtras().get("data");
-                            imageSending.setImageBitmap(image);
-
-
+                            imageReceived = (Bitmap) data.getExtras().get("data");
+                            imageSending.setImageBitmap(imageReceived);
                         }
-
                     }
                 });
 
@@ -135,6 +146,42 @@ public class MainActivity extends AppCompatActivity {
                 imageActivityResultLauncher.launch(intent);
             }
 
+        });
+
+        sendBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imageReceived != null) {
+                    // Send the image in json
+                    String requestUrl = goserver + "/image";
+                    JSONObject postData = new JSONObject();
+
+                    // Encode the bitmap
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    imageReceived.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] imageBytes = baos.toByteArray();
+                    String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+                    try {
+                        postData.put("image", encodedImage);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+
+                    RequestQueue nameRequestQueue = Volley.newRequestQueue(MainActivity.this);
+                    nameRequestQueue.add(jsonObjectRequest);
+                }
+            }
         });
 
 
@@ -157,10 +204,7 @@ public class MainActivity extends AppCompatActivity {
         robot.addOnFaceRecognizedListener(new OnFaceRecognizedListener() {
             @Override
             public void onFaceRecognized(@NonNull List<ContactModel> list) {
-
-                Log.v("urmum", "suck");
-
-
+                
                 name.setText(list.get(0).getFirstName() + " " + list.get(0).getLastName());
                 robot.stopFaceRecognition();
 
