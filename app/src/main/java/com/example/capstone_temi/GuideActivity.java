@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -97,6 +100,16 @@ public class GuideActivity extends AppCompatActivity implements
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
+
+        ImageButton back = findViewById(R.id.back);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -160,6 +173,10 @@ public class GuideActivity extends AppCompatActivity implements
                        // If the TEMI is not returned to the home base yet
                         if(!location.equals("home base")){
                             if(status.equals("complete")){
+                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                r.play();
+
                                 popup();
                             }
                         }
@@ -306,11 +323,12 @@ public class GuideActivity extends AppCompatActivity implements
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                answer = false;
                 Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                 startActivity(launchIntent);
                 popupWindow.dismiss();
                 robot.goTo("home base");
-                answer = false;
+
             }
         });
 
