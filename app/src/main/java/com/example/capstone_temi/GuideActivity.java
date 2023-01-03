@@ -3,6 +3,8 @@ package com.example.capstone_temi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -161,6 +163,10 @@ public class GuideActivity extends AppCompatActivity implements
                        // If the TEMI is not returned to the home base yet
                         if(!location.equals("home base")){
                             if(status.equals("complete")){
+                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                r.play();
+
                                 popup();
                             }
                         }
