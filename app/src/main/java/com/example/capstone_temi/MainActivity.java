@@ -82,7 +82,19 @@ public class MainActivity extends AppCompatActivity {
 
         robot = Robot.getInstance();
 
+        Button go = findViewById(R.id.go);
 
+        go.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, GuideActivity.class);
+                intent.putExtra("level", "2");
+                intent.putExtra("shelfno", "17");
+                intent.putExtra("bookid", "HF1118-G569");
+                intent.putExtra("bookname", "Diary of a Wimpy Kid");
+                startActivity(intent);
+            }
+        });
 
         Button dance = findViewById(R.id.dance);
 

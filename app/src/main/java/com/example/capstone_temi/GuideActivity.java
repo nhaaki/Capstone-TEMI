@@ -107,7 +107,15 @@ public class GuideActivity extends AppCompatActivity implements
     }
 
     private void handleIntent(){
+
+
+
         Intent appLinkIntent = getIntent();
+
+        bookId = appLinkIntent.getStringExtra("bookId");
+        level = appLinkIntent.getStringExtra("level");
+        shelfNo = appLinkIntent.getStringExtra("shelfNo");
+        bookName = appLinkIntent.getStringExtra("bookName");
 
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
@@ -122,27 +130,31 @@ public class GuideActivity extends AppCompatActivity implements
                 String key = dataPair[0];
                 if (key.equals("level")) {
                     level = dataPair[1];
+
                 }
                 else if (key.equals("shelfno")) {
                     shelfNo = dataPair[1];
+
                 }
                 else if (key.equals("bookid")) {
                     bookId = dataPair[1];
+
                 }
                 else if (key.equals("bookname")) {
                     bookName = dataPair[1].replace("~", "&");
+
                 }
             }
 
- /*
 
-            String rawdata = appLinkData.getLastPathSegment();
-            String[] data = rawdata.split(";",4 );
-            level = data[0];
-            shelfNo = data[1];
-            bookName = data[2];
-            bookId = data[3];
-  */
+
+//            String rawdata = appLinkData.getLastPathSegment();
+//            String[] data = rawdata.split(";",4 );
+//            level = data[0];
+//            shelfNo = data[1];
+//            bookName = data[2];
+//            bookId = data[3];
+
 
 
             if(level.equals(levelNo)){
@@ -152,7 +164,7 @@ public class GuideActivity extends AppCompatActivity implements
                 booknametxt.setText(bookName);
                 bookidtxt.setText(bookId);
 
-                appLinkIntent = null;
+                //appLinkIntent = null;
 
                 robot.goTo("shelf"+shelfNo);
                 robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
