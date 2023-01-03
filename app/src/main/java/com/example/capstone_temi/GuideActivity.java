@@ -74,7 +74,7 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://192.168.0.192:10000";
+    public String goserver = "http://192.168.0.112:10000";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -87,13 +87,17 @@ public class GuideActivity extends AppCompatActivity implements
     public Boolean answer = true;
 
 
+
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
+        mcontext = this.getApplicationContext();
         robot = Robot.getInstance();
         server = new WebServer();
+
         try {
             server.start();
         } catch (IOException ioe) {
@@ -101,7 +105,7 @@ public class GuideActivity extends AppCompatActivity implements
         }
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
-        handleIntent();
+        handleIntent(this.getApplicationContext());
 
         ImageButton back = findViewById(R.id.back);
 
@@ -114,13 +118,13 @@ public class GuideActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent();
-    }
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//        handleIntent(this.getApplicationContext());
+//    }
 
-    private void handleIntent(){
+    private void handleIntent(Context c){
 
 
 
@@ -136,29 +140,29 @@ public class GuideActivity extends AppCompatActivity implements
         //if(appLinkData != null){
         if(appLinkData == null){
             // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
-            String rawdata = appLinkData.getLastPathSegment();
-            String[] data = rawdata.split("&",4 );
+//            String rawdata = appLinkData.getLastPathSegment();
+//            String[] data = rawdata.split("&",4 );
 
-            for (int i =0; i < 4; i++) {
-                String[] dataPair = data[i].split("=", 2);
-                String key = dataPair[0];
-                if (key.equals("level")) {
-                    level = dataPair[1];
-
-                }
-                else if (key.equals("shelfno")) {
-                    shelfNo = dataPair[1];
-
-                }
-                else if (key.equals("bookid")) {
-                    bookId = dataPair[1];
-
-                }
-                else if (key.equals("bookname")) {
-                    bookName = dataPair[1].replace("~", "&");
-
-                }
-            }
+//            for (int i =0; i < 4; i++) {
+//                String[] dataPair = data[i].split("=", 2);
+//                String key = dataPair[0];
+//                if (key.equals("level")) {
+//                    level = dataPair[1];
+//
+//                }
+//                else if (key.equals("shelfno")) {
+//                    shelfNo = dataPair[1];
+//
+//                }
+//                else if (key.equals("bookid")) {
+//                    bookId = dataPair[1];
+//
+//                }
+//                else if (key.equals("bookname")) {
+//                    bookName = dataPair[1].replace("~", "&");
+//
+//                }
+//            }
 
 
 
@@ -172,6 +176,10 @@ public class GuideActivity extends AppCompatActivity implements
 
 
             if(level.equals(levelNo)){
+                bookId = appLinkIntent.getStringExtra("bookId");
+                level = appLinkIntent.getStringExtra("level");
+                shelfNo = appLinkIntent.getStringExtra("shelfNo");
+                bookName = appLinkIntent.getStringExtra("bookName");
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
 
@@ -200,31 +208,11 @@ public class GuideActivity extends AppCompatActivity implements
 
             // For different Level TEMIs
             else{
+                TextView booknametxt = findViewById(R.id.book_name);
+                TextView bookidtxt = findViewById(R.id.book_id);
 
-                // inflate the layout of the popup window
-                LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
-                View popupView = inflater.inflate(R.layout.popup2, null);
-
-                // create the popup window
-                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                boolean focusable = true; // lets taps outside the popup also dismiss it
-                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-                // show the popup window
-                // which view you pass in doesn't matter, it is only used for the window tolken
-                popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
-                popupView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        popupWindow.dismiss();
-                        return true;
-                    }
-                });
-
-
-
-
+                booknametxt.setText(bookName);
+                bookidtxt.setText(bookId);
                 // Launch take photo
                 ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                         new ActivityResultCallback<ActivityResult>() {
@@ -234,35 +222,9 @@ public class GuideActivity extends AppCompatActivity implements
                                 if (result.getResultCode() == Activity.RESULT_OK) {
                                     Intent data = result.getData();
                                     imageReceived = (Bitmap) data.getExtras().get("data");
-                                    if (imageReceived != null) {
-                                        // Send the image in json
-                                        String requestUrl = goserver + "/image";
-                                        JSONObject postData = new JSONObject();
 
-                                        // Encode the bitmap
-                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                        imageReceived.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                                        byte[] imageBytes = baos.toByteArray();
-                                        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
-                                        try {
-                                            postData.put("image", encodedImage);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                            }
-                                        }, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                error.printStackTrace();
-                                            }
-                                        });
 
-                                        RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
-                                        nameRequestQueue.add(jsonObjectRequest);
 
 
                                         // inflate the layout of the popup window
@@ -276,25 +238,118 @@ public class GuideActivity extends AppCompatActivity implements
                                         boolean focusable = true; // lets taps outside the popup also dismiss it
                                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
-                                        // show the popup window
-                                        // which view you pass in doesn't matter, it is only used for the window tolken
-                                        popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
-                                        popupView.setOnTouchListener(new View.OnTouchListener() {
-                                            @Override
-                                            public boolean onTouch(View v, MotionEvent event) {
-                                                popupWindow.dismiss();
-                                                Intent intent = new Intent(GuideActivity.this, MainActivity.class);
-                                                startActivity(intent);
-                                                return true;
+                                        CountDownTimer waitTimer;
+                                        waitTimer = new CountDownTimer(3000, 1000) {
+
+                                            public void onTick(long millisUntilFinished) {
+                                                if (imageReceived != null) {
+                                                    // Send the image in json
+                                                    String requestUrl = goserver + "/image";
+                                                    JSONObject postData = new JSONObject();
+
+                                                    // Encode the bitmap
+                                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                                    imageReceived.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                                    byte[] imageBytes = baos.toByteArray();
+                                                    String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+                                                    try {
+                                                        postData.put("image", encodedImage);
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                                                        @Override
+                                                        public void onResponse(JSONObject response) {
+                                                            Log.v("jy", "ugu");
+                                                        }
+                                                    }, new Response.ErrorListener() {
+                                                        @Override
+                                                        public void onErrorResponse(VolleyError error) {
+                                                            error.printStackTrace();
+                                                        }
+                                                    });
+                                                    Log.v("jy", this.toString());
+
+                                                    RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
+
+                                                    nameRequestQueue.add(jsonObjectRequest);
+                                                }
+
                                             }
-                                        });
+
+                                            public void onFinish() {
+
+
+
+                                                // show the popup window
+                                                // which view you pass in doesn't matter, it is only used for the window tolken
+                                                popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                                                popupView.setOnTouchListener(new View.OnTouchListener() {
+                                                    @Override
+                                                    public boolean onTouch(View v, MotionEvent event) {
+                                                        popupWindow.dismiss();
+                                                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                                        startActivity(intent);
+                                                        return true;
+                                                    }
+                                                });
+
+
+
+                                            }
+                                        }.start();
+
+
                                     }
                                 }
+
+                        });
+
+                // inflate the layout of the popup window
+                LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                View popupView = inflater.inflate(R.layout.popup2, null);
+
+                // create the popup window
+                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                boolean focusable = true; // lets taps outside the popup also dismiss it
+                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                // show the popup window
+                // which view you pass in doesn't matter, it is only used for the window tolken
+
+                CountDownTimer waitTimer;
+                waitTimer = new CountDownTimer(3000, 1000) {
+
+                    public void onTick(long millisUntilFinished) {
+
+                    }
+
+                    public void onFinish() {
+                        popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                popupWindow.dismiss();
+                                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                                imageActivityResultLauncher.launch(intent);
+                                return true;
                             }
                         });
 
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                imageActivityResultLauncher.launch(intent);
+
+                    }
+                }.start();
+
+
+
+
+
+
+
+
+
 
 
 

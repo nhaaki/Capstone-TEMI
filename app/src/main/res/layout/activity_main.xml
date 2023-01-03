@@ -13,42 +13,10 @@
         android:layout_height="581dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
 
-    <Button
-        android:id="@+id/takePhotoBut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    </WebView>
 
-        android:layout_marginEnd="24dp"
-        android:text="Take Photo"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintEnd_toStartOf="@+id/picture"
-        app:layout_constraintTop_toBottomOf="@+id/webView" />
-
-    <Button
-        android:id="@+id/sendBut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="32dp"
-        android:text="Send"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintStart_toEndOf="@+id/picture"
-        app:layout_constraintTop_toBottomOf="@+id/webView" />
-
-
-    <Button
-        android:id="@+id/dance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-
-        android:text="Dance"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintEnd_toStartOf="@+id/takePhotoBut"
-        app:layout_constraintTop_toTopOf="@+id/picture"
-        app:layout_constraintVertical_bias="0.483" />
 
     <ImageButton
         android:id="@+id/back"
@@ -73,25 +41,26 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/refresh" />
 
-    <ImageView
-        android:id="@+id/picture"
-        android:layout_width="219dp"
-        android:layout_height="141dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/webView"
-        app:srcCompat="@color/purple_200" />
-
     <Button
         android:id="@+id/go"
+        android:layout_width="337dp"
+        android:layout_height="85dp"
+        android:text="Level2, Design, Shelf 10"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/webView" />
+
+    <Button
+        android:id="@+id/dance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="111dp"
-        android:text="Go"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintStart_toEndOf="@+id/sendBut"
-        app:layout_constraintTop_toBottomOf="@+id/webView"
-        app:layout_constraintVertical_bias="0.505" />
+
+        android:layout_marginStart="73dp"
+        android:layout_marginBottom="1000dp"
+        android:text="Dance"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

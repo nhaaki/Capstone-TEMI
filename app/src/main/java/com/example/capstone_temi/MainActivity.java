@@ -53,9 +53,6 @@ public class MainActivity extends AppCompatActivity {
     public Robot robot;
 
     public String goserver = "http://192.168.0.112:10000";
-
-    public Button takePhotoButton;
-    public Button sendBut;
     public ImageView imageSending;
     public TextView name;
 
@@ -75,9 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // For level 2 feature showcase
-        takePhotoButton = (Button) findViewById(R.id.takePhotoBut);
-        sendBut = (Button) findViewById(R.id.sendBut);
-        imageSending = (ImageView) findViewById(R.id.picture);
+
 
         reload = (ImageButton) findViewById(R.id.refresh);
         back = (ImageButton) findViewById(R.id.back);
@@ -144,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         // For local HTML files
         webView.setWebViewClient(new Callback());
         webView.loadUrl("file:///android_asset/index.html");
-/*
+
         ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -158,57 +153,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
- */
-/*
-        // For level 2 showcase
-        takePhotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                imageActivityResultLauncher.launch(intent);
-            }
 
-        });
 
- */
-/*
-        sendBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (imageReceived != null) {
-                    // Send the image in json
-                    String requestUrl = goserver + "/image";
-                    JSONObject postData = new JSONObject();
 
-                    // Encode the bitmap
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    imageReceived.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] imageBytes = baos.toByteArray();
-                    String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
-                    try {
-                        postData.put("image", encodedImage);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            error.printStackTrace();
-                        }
-                    });
 
-                    RequestQueue nameRequestQueue = Volley.newRequestQueue(MainActivity.this);
-                    nameRequestQueue.add(jsonObjectRequest);
-                }
-            }
-        });
 
- */
+
+
 
 
         reload.setOnClickListener(new View.OnClickListener() {
