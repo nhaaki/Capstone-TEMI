@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -119,14 +121,18 @@ public class MainActivity extends AppCompatActivity {
 
 
         this.webView = (WebView) findViewById(R.id.webView);
-
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        WebViewClientImpl webViewClient = new WebViewClientImpl(this);
-        webView.setWebViewClient(webViewClient);
-        webView.loadUrl(url);
+        //---- For Website hosting with INTERNET-----
+          //  WebViewClientImpl webViewClient = new WebViewClientImpl(this);
+          //  webView.setWebViewClient(webViewClient);
+          //  webView.loadUrl(url);
 
+        // For local HTML files
+        webView.setWebViewClient(new Callback());
+        webView.loadUrl("file:///android_asset/index.html");
+/*
         ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -140,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+ */
+/*
         // For level 2 showcase
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+ */
+/*
         sendBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+ */
+
 
         reload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,6 +213,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private class Callback extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return false;
+        }
     }
 
 
