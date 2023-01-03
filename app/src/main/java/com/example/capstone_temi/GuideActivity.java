@@ -14,6 +14,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -82,6 +83,7 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookName; // BookName from the req URL
     public Robot robot;
     public Bitmap imageReceived;
+    public Context mcontext;
     public Boolean answer = true;
 
 
@@ -131,8 +133,8 @@ public class GuideActivity extends AppCompatActivity implements
 
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
-        if(appLinkData != null){
-
+        //if(appLinkData != null){
+        if(appLinkData == null){
             // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split("&",4 );
@@ -198,6 +200,31 @@ public class GuideActivity extends AppCompatActivity implements
 
             // For different Level TEMIs
             else{
+
+                // inflate the layout of the popup window
+                LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
+                View popupView = inflater.inflate(R.layout.popup2, null);
+
+                // create the popup window
+                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                boolean focusable = true; // lets taps outside the popup also dismiss it
+                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                // show the popup window
+                // which view you pass in doesn't matter, it is only used for the window tolken
+                popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                popupView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        popupWindow.dismiss();
+                        return true;
+                    }
+                });
+
+
+
+
                 // Launch take photo
                 ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                         new ActivityResultCallback<ActivityResult>() {
@@ -236,6 +263,31 @@ public class GuideActivity extends AppCompatActivity implements
 
                                         RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
                                         nameRequestQueue.add(jsonObjectRequest);
+
+
+                                        // inflate the layout of the popup window
+
+                                        LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                                        View popupView = inflater.inflate(R.layout.popup3, null);
+
+                                        // create the popup window
+                                        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                        boolean focusable = true; // lets taps outside the popup also dismiss it
+                                        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                                        // show the popup window
+                                        // which view you pass in doesn't matter, it is only used for the window tolken
+                                        popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                                            @Override
+                                            public boolean onTouch(View v, MotionEvent event) {
+                                                popupWindow.dismiss();
+                                                Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                                return true;
+                                            }
+                                        });
                                     }
                                 }
                             }
