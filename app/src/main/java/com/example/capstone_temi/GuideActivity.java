@@ -74,7 +74,7 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://192.168.0.192:10000";
+    public String goserver = "http://192.168.0.112:10000";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -82,7 +82,7 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookId; // Bookid from the req URL
     public String bookName; // BookName from the req URL
     public Robot robot;
-    public Bitmap imageReceived;
+   // public Bitmap imageReceived;
     public Context mcontext;
     public Boolean answer = true;
 
@@ -224,7 +224,7 @@ public class GuideActivity extends AppCompatActivity implements
 
 
 
-
+/*
                 // Launch take photo
                 ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                         new ActivityResultCallback<ActivityResult>() {
@@ -296,9 +296,7 @@ public class GuideActivity extends AppCompatActivity implements
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 imageActivityResultLauncher.launch(intent);
 
-
-
-
+ */
 
 
                 String requestUrl = goserver + "/wronglevel";
