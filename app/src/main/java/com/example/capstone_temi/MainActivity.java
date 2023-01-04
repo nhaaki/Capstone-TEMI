@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*
         Button dance = findViewById(R.id.dance);
 
         dance.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+
+         */
+
+
 
 
         this.webView = (WebView) findViewById(R.id.webView);

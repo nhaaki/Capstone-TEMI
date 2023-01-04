@@ -9,14 +9,14 @@
 
     <WebView
         android:id="@+id/webView"
-        android:layout_width="1152dp"
-        android:layout_height="581dp"
+        android:layout_width="1518dp"
+        android:layout_height="864dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
     </WebView>
-
 
     <ImageButton
         android:id="@+id/back"
@@ -43,24 +43,13 @@
 
     <Button
         android:id="@+id/go"
-        android:layout_width="337dp"
-        android:layout_height="85dp"
+        android:layout_width="452dp"
+        android:layout_height="79dp"
+        android:layout_marginBottom="36dp"
         android:text="Level2, Design, Shelf 10"
-        android:textSize="20sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/webView" />
-
-    <Button
-        android:id="@+id/dance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="52dp"
-        android:layout_marginBottom="24dp"
-        android:text="Dance"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
