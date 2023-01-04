@@ -224,9 +224,6 @@ public class GuideActivity extends AppCompatActivity implements
                                     imageReceived = (Bitmap) data.getExtras().get("data");
 
 
-
-
-
                                         // inflate the layout of the popup window
 
                                         LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
