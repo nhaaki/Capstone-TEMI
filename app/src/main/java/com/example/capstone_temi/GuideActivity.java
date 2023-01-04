@@ -134,7 +134,8 @@ public class GuideActivity extends AppCompatActivity implements
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
         //if(appLinkData != null){
-        if(appLinkData == null){
+        if(appLinkData != null){
+
             // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
             String rawdata = appLinkData.getLastPathSegment();
             String[] data = rawdata.split("&",4 );

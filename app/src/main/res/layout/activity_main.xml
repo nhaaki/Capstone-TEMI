@@ -32,7 +32,7 @@
         android:id="@+id/back"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="76dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="#00FFFFFF"
         android:scaleType="fitCenter"
@@ -45,11 +45,22 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="88dp"
+        android:layout_marginEnd="16dp"
         android:background="#00FFFFFF"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/refresh" />
+
+    <Button
+        android:id="@+id/goHome"
+        android:layout_width="99dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="80dp"
+        android:text="Home"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
