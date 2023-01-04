@@ -54,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
 
     public String goserver = "http://192.168.0.112:10000";
 
-    public Button takePhotoButton;
-    public Button sendBut;
-    public ImageView imageSending;
+   //public Button takePhotoButton;
+   // public Button sendBut;
+    //public ImageView imageSending;
     public TextView name;
 
     public ImageButton reload;
     public ImageButton back;
-    public Bitmap imageReceived;
+   // public Bitmap imageReceived;
 
 
     private static final int CAMERA_PIC_REQUEST = 1337;
@@ -75,17 +75,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // For level 2 feature showcase
-        takePhotoButton = (Button) findViewById(R.id.takePhotoBut);
-        sendBut = (Button) findViewById(R.id.sendBut);
-        imageSending = (ImageView) findViewById(R.id.picture);
+      //  takePhotoButton = (Button) findViewById(R.id.takePhotoBut);
+    //    sendBut = (Button) findViewById(R.id.sendBut);
+    //    imageSending = (ImageView) findViewById(R.id.picture);
 
         reload = (ImageButton) findViewById(R.id.refresh);
         back = (ImageButton) findViewById(R.id.back);
 
         robot = Robot.getInstance();
 
-        Button go = findViewById(R.id.go);
-
+//        Button go = findViewById(R.id.go);
+/*
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+ */
 
         Button dance = findViewById(R.id.dance);
 
@@ -137,13 +139,13 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
 
         //---- For Website hosting with INTERNET-----
-          //  WebViewClientImpl webViewClient = new WebViewClientImpl(this);
-          //  webView.setWebViewClient(webViewClient);
-          //  webView.loadUrl(url);
+           WebViewClientImpl webViewClient = new WebViewClientImpl(this);
+            webView.setWebViewClient(webViewClient);
+            webView.loadUrl(url);
 
         // For local HTML files
-        webView.setWebViewClient(new Callback());
-        webView.loadUrl("file:///android_asset/index.html");
+    //    webView.setWebViewClient(new Callback());
+    //    webView.loadUrl("file:///android_asset/index.html");
 /*
         ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -226,13 +228,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
+/*  Local HTML file
     private class Callback extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             return false;
         }
     }
+
+ */
 
 
 //    @Override

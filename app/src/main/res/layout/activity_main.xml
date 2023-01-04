@@ -9,53 +9,31 @@
 
     <WebView
         android:id="@+id/webView"
-        android:layout_width="1152dp"
-        android:layout_height="581dp"
+        android:layout_width="1445dp"
+        android:layout_height="778dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/takePhotoBut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginEnd="24dp"
-        android:text="Take Photo"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintEnd_toStartOf="@+id/picture"
-        app:layout_constraintTop_toBottomOf="@+id/webView" />
-
-    <Button
-        android:id="@+id/sendBut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="32dp"
-        android:text="Send"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintStart_toEndOf="@+id/picture"
-        app:layout_constraintTop_toBottomOf="@+id/webView" />
 
 
     <Button
         android:id="@+id/dance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
 
+        android:layout_marginTop="584dp"
         android:text="Dance"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintEnd_toStartOf="@+id/takePhotoBut"
-        app:layout_constraintTop_toTopOf="@+id/picture"
-        app:layout_constraintVertical_bias="0.483" />
+        app:layout_constraintEnd_toStartOf="@+id/webView"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/back"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="4dp"
         android:background="#00FFFFFF"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,32 +44,12 @@
         android:id="@+id/refresh"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="88dp"
         android:background="#00FFFFFF"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/refresh" />
-
-    <ImageView
-        android:id="@+id/picture"
-        android:layout_width="219dp"
-        android:layout_height="141dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/webView"
-        app:srcCompat="@color/purple_200" />
-
-    <Button
-        android:id="@+id/go"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="111dp"
-        android:text="Go"
-        app:layout_constraintBottom_toBottomOf="@+id/picture"
-        app:layout_constraintStart_toEndOf="@+id/sendBut"
-        app:layout_constraintTop_toBottomOf="@+id/webView"
-        app:layout_constraintVertical_bias="0.505" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
