@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageButton reload;
     public ImageButton back;
    // public Bitmap imageReceived;
+    public Button home;
 
 
     private static final int CAMERA_PIC_REQUEST = 1337;
@@ -99,6 +100,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
  */
+        home = findViewById(R.id.goHome);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                robot.goTo("home base");
+            }
+        });
+
 
         Button dance = findViewById(R.id.dance);
 
