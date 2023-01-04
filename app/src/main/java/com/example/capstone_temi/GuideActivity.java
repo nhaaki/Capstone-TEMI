@@ -345,6 +345,9 @@ public class GuideActivity extends AppCompatActivity implements
         boolean focusable = true; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
+        popupWindow.setOutsideTouchable(false);
+        popupWindow.setFocusable(false);
+
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.BOTTOM, 0, 0);
