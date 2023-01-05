@@ -369,6 +369,9 @@ public class GuideActivity extends AppCompatActivity implements
             public void onFinish() {
 
                 if(answer == true){
+                    Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
+                    startActivity(launchIntent);
+                    popupWindow.dismiss();
                     robot.goTo("home base");
                 }
 
