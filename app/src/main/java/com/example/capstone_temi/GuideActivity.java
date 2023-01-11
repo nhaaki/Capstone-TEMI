@@ -505,7 +505,7 @@ public class GuideActivity extends AppCompatActivity implements
                     String data = map.get("postData");
                     Context ctx=getApplicationContext();
 
-
+/*
                     Intent intent = new Intent(ctx, GuideActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
                     // the activity from a service
@@ -514,11 +514,13 @@ public class GuideActivity extends AppCompatActivity implements
                     startActivity(intent);
 
 
+ */
+
                     JSONObject json = new JSONObject(data);
-                    bookId = json.get("bookid");
-                    level = json.get("level");
-                    shelfNo = json.get("shelfno");
-                    bookName = json.get("bookname");
+                    bookId = json.getString("bookid");
+                    level = json.getString("level");
+                    shelfNo = json.getString("shelfno");
+                    bookName = json.getString("bookname");
 
                     Log.w("lol", bookId);
 
