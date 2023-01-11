@@ -83,9 +83,15 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookId; // Bookid from the req URL
     public String bookName; // BookName from the req URL
     public Robot robot;
+    public ImageButton back;
+
+    public TextView booknametxt;
+    public TextView bookidtxt;
    // public Bitmap imageReceived;
     public Context mcontext;
     public Boolean answer = true;
+
+
 
 
     /** Called when the activity is first created. */
@@ -104,7 +110,7 @@ public class GuideActivity extends AppCompatActivity implements
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
 
-        ImageButton back = findViewById(R.id.back);
+        back = findViewById(R.id.back);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,8 +162,8 @@ public class GuideActivity extends AppCompatActivity implements
             }
 
             if(level.equals(levelNo)){
-                TextView booknametxt = findViewById(R.id.book_name);
-                TextView bookidtxt = findViewById(R.id.book_id);
+                booknametxt = findViewById(R.id.book_name);
+                bookidtxt = findViewById(R.id.book_id);
 
                 booknametxt.setText(bookName);
                 bookidtxt.setText(bookId);
@@ -523,9 +529,6 @@ public class GuideActivity extends AppCompatActivity implements
                     bookName = json.getString("bookname");
 
                     Log.w("lol", bookId);
-
-                    TextView booknametxt = findViewById(R.id.book_name);
-                    TextView bookidtxt = findViewById(R.id.book_id);
 
                     booknametxt.setText(bookName);
                     bookidtxt.setText(bookId);
