@@ -515,10 +515,10 @@ public class GuideActivity extends AppCompatActivity implements
 
 
                     JSONObject json = new JSONObject(data);
-                    bookId = json.getString("bookid");
-                    level = json.getString("level");
-                    shelfNo = json.getString("shelfno");
-                    bookName = json.getString("bookname");
+                    bookId = json.get("bookid");
+                    level = json.get("level");
+                    shelfNo = json.get("shelfno");
+                    bookName = json.get("bookname");
 
                     Log.w("lol", bookId);
 
