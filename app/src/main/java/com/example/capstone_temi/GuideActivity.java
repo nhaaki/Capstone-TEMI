@@ -74,7 +74,8 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://192.168.0.112:10000";
+
+    public String goserver = "http://192.168.43.244:10000";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -204,7 +205,7 @@ public class GuideActivity extends AppCompatActivity implements
 
                 // inflate the layout of the popup window
                 LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
-                View popupView = inflater.inflate(R.layout.popup2, null);
+                View popupView = inflater.inflate(R.layout.popup3, null);
 
                 // create the popup window
                 int width = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -219,10 +220,11 @@ public class GuideActivity extends AppCompatActivity implements
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         popupWindow.dismiss();
+                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                        startActivity(intent);
                         return true;
                     }
                 });
-
 
 
 /*

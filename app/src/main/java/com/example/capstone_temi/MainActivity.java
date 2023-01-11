@@ -52,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
     public String url = "https://chen-han-np.github.io/Capstone-TEMI-Website-Demo/";
     public Robot robot;
 
-    public String goserver = "http://192.168.0.112:10000";
+    public String goserver = "http://192.168.43.244:10000";
 
-   //public Button takePhotoButton;
-   // public Button sendBut;
+    // public Button takePhotoButton;
+    // public Button sendBut;
     //public ImageView imageSending;
     public TextView name;
 
