@@ -6,14 +6,15 @@
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="731dp"
+        android:layout_height="130dp"
         android:layout_centerInParent="true"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
-        android:text="Head to level 2, another temi will bring you to your book"
+        android:lineSpacingExtra="12sp"
+        android:text="Your book is located at Level [] \nPlease kindly wait at the Level [] staircase \nAnd another TEMI will serve you!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="22sp" />

@@ -74,7 +74,8 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://192.168.0.112:10000";
+
+    public String goserver = "http://192.168.43.244:10000";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -122,14 +123,7 @@ public class GuideActivity extends AppCompatActivity implements
 
     private void handleIntent(){
 
-
-
         Intent appLinkIntent = getIntent();
-
-        bookId = appLinkIntent.getStringExtra("bookId");
-        level = appLinkIntent.getStringExtra("level");
-        shelfNo = appLinkIntent.getStringExtra("shelfNo");
-        bookName = appLinkIntent.getStringExtra("bookName");
 
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
@@ -161,17 +155,6 @@ public class GuideActivity extends AppCompatActivity implements
                 }
             }
 
-
-
-//            String rawdata = appLinkData.getLastPathSegment();
-//            String[] data = rawdata.split(";",4 );
-//            level = data[0];
-//            shelfNo = data[1];
-//            bookName = data[2];
-//            bookId = data[3];
-
-
-
             if(level.equals(levelNo)){
                 TextView booknametxt = findViewById(R.id.book_name);
                 TextView bookidtxt = findViewById(R.id.book_id);
@@ -202,9 +185,10 @@ public class GuideActivity extends AppCompatActivity implements
             // For different Level TEMIs
             else{
 
+
                 // inflate the layout of the popup window
-                LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
-                View popupView = inflater.inflate(R.layout.popup2, null);
+                LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                View popupView = inflater.inflate(R.layout.popup3, null);
 
                 // create the popup window
                 int width = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -214,16 +198,26 @@ public class GuideActivity extends AppCompatActivity implements
 
                 // show the popup window
                 // which view you pass in doesn't matter, it is only used for the window tolken
-                popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
-                popupView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        popupWindow.dismiss();
-                        return true;
+
+                CountDownTimer waitTimer;
+                waitTimer = new CountDownTimer(3000, 1000) {
+                    public void onTick(long millisUntilFinished) {
                     }
-                });
+                    public void onFinish() {
+                        popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                popupWindow.dismiss();
+                                Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                return true;
+                            }
+                        });
 
 
+                    }
+                }.start();
 
 /*
                 // Launch take photo
@@ -298,7 +292,6 @@ public class GuideActivity extends AppCompatActivity implements
                 imageActivityResultLauncher.launch(intent);
 
  */
-
 
                 String requestUrl = goserver + "/wronglevel";
                 JSONObject postData = new JSONObject();
@@ -512,7 +505,7 @@ public class GuideActivity extends AppCompatActivity implements
                     String data = map.get("postData");
                     Context ctx=getApplicationContext();
 
-
+/*
                     Intent intent = new Intent(ctx, GuideActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
                     // the activity from a service
@@ -521,22 +514,44 @@ public class GuideActivity extends AppCompatActivity implements
                     startActivity(intent);
 
 
-                    JSONObject json = new JSONObject(data);
+ */
 
+                    JSONObject json = new JSONObject(data);
+                    bookId = json.getString("bookid");
+                    level = json.getString("level");
+                    shelfNo = json.getString("shelfno");
+                    bookName = json.getString("bookname");
+
+                    Log.w("lol", bookId);
+
+                    TextView booknametxt = findViewById(R.id.book_name);
+                    TextView bookidtxt = findViewById(R.id.book_id);
+
+                    booknametxt.setText(bookName);
+                    bookidtxt.setText(bookId);
+
+                    //appLinkIntent = null;
+
+                    robot.goTo("shelf"+shelfNo);
+                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if(!location.equals("home base")){
+                                if(status.equals("complete")){
+                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                    r.play();
+                                    popup();
+                                }
+                            }
+                        }
+                    });
 
                     return newFixedLengthResponse(data);
                 } catch (IOException | ResponseException | JSONException e) {
                     // handle
                     e.printStackTrace();
-                }
-            }
-            if (session.getMethod() == Method.POST) {
-                try {
-                    session.parseBody(new HashMap<>());
-                    String requestBody = session.getQueryParameterString();
-                    return newFixedLengthResponse("Request body = " + requestBody);
-                } catch (IOException | ResponseException e) {
-                    return newFixedLengthResponse(e.getMessage());
                 }
             }
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
