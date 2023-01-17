@@ -87,6 +87,7 @@ public class GuideActivity extends AppCompatActivity implements
 
     public TextView booknametxt;
     public TextView bookidtxt;
+    public TextView taskfinishtxt;
    // public Bitmap imageReceived;
     public Context mcontext;
     public Boolean answer = true;
@@ -164,9 +165,11 @@ public class GuideActivity extends AppCompatActivity implements
             if(level.equals(levelNo)){
                 booknametxt = findViewById(R.id.book_name);
                 bookidtxt = findViewById(R.id.book_id);
+                taskfinishtxt = findViewById(R.id.taskFinishTxt);
 
                 booknametxt.setText(bookName);
                 bookidtxt.setText(bookId);
+                taskfinishtxt.setText("We've reached shelf " + shelfNo + "! Your book should be nearby :)");
 
                 //appLinkIntent = null;
 
