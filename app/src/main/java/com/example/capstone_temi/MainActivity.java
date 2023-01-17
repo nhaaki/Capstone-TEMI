@@ -2,6 +2,7 @@ package com.example.capstone_temi;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -42,17 +43,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+
+import fi.iki.elonen.NanoHTTPD;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
     private WebView webView = null;
+    private MainActivity.WebServer server;
     public String url = "https://chen-han-np.github.io/Capstone-TEMI-Website-Demo/";
     public Robot robot;
 
-    public String goserver = "http://192.168.0.112:10000";
+
 
    //public Button takePhotoButton;
    // public Button sendBut;
@@ -66,11 +72,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final int CAMERA_PIC_REQUEST = 1337;
+    public String goserver = "http://172.20.10.4:105";
+    public int portNumber = 8080;
+    public String levelNo = "3"; //TEMI current level
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        server = new MainActivity.WebServer();
+        try {
+            server.start();
+        } catch (IOException ioe) {
+            Log.w("Httpd", "The server could not start.");
+        }
+        Log.w("Httpd", "Web server initialized.");
 
 
         setContentView(R.layout.activity_main);
@@ -256,6 +272,51 @@ public class MainActivity extends AppCompatActivity {
 //            imageSending.setImageBitmap(image);
 //        }
 //    }
+
+
+    private class WebServer extends NanoHTTPD {
+
+        public WebServer()
+        {
+            super(portNumber);
+        }
+
+        @Override
+        public Response serve(IHTTPSession session) {
+
+            if (session.getMethod() == Method.POST) {
+                try {
+                    final HashMap<String, String> map = new HashMap<String, String>();
+                    session.parseBody(map);
+                    String data = map.get("postData");
+                    Context ctx=getApplicationContext();
+
+
+                    Intent intent = new Intent(ctx, GuideActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
+                    // the activity from a service
+                    intent.setAction(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    startActivity(intent);
+
+
+                    JSONObject json = new JSONObject(data);
+
+
+                    return newFixedLengthResponse("fghjk");
+                } catch (IOException | ResponseException | JSONException e) {
+                    // handle
+                    e.printStackTrace();
+                }
+            }
+
+            return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
+                    "The requested resource does not exist");
+
+        }
+
+
+    }
 
 
 }

@@ -74,7 +74,7 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://192.168.0.112:10000";
+    public String goserver = "http://172.20.10.4:105";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -99,7 +99,7 @@ public class GuideActivity extends AppCompatActivity implements
         } catch (IOException ioe) {
             Log.w("Httpd", "The server could not start.");
         }
-        Log.w("Httpd", "Web server initialized.");
+        Log.w("Httpd", "fghjkl");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
 
@@ -526,15 +526,7 @@ public class GuideActivity extends AppCompatActivity implements
                     e.printStackTrace();
                 }
             }
-            if (session.getMethod() == Method.POST) {
-                try {
-                    session.parseBody(new HashMap<>());
-                    String requestBody = session.getQueryParameterString();
-                    return newFixedLengthResponse("Request body = " + requestBody);
-                } catch (IOException | ResponseException e) {
-                    return newFixedLengthResponse(e.getMessage());
-                }
-            }
+
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
                     "The requested resource does not exist");
 
