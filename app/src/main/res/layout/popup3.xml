@@ -14,7 +14,7 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
         android:lineSpacingExtra="12sp"
-        android:text="Your book is located at Level [] \nPlease kindly wait at the Level [] staircase \nAnd another TEMI will serve you!"
+        android:text="Your book is located at Level [] \nPlease kindly wait at the Level [] staircase, \nwhere another TEMI will serve you!"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="22sp" />
