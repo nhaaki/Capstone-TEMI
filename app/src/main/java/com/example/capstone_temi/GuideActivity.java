@@ -31,10 +31,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.robotemi.sdk.NlpResult;
@@ -57,6 +59,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -171,7 +174,44 @@ public class GuideActivity extends AppCompatActivity implements
                 bookidtxt.setText(bookId);
                 taskfinishtxt.setText("We've reached shelf " + shelfNo + "! Your book should be nearby :)");
 
-                //appLinkIntent = null;
+                //appLinkIntent = null
+
+                String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
+                JSONObject postData = new JSONObject();
+                try {
+                    postData.put("level", level);
+                    postData.put("shelfno", shelfNo);
+                    postData.put("bookid", bookId);
+                    postData.put("bookname", bookName);
+                }catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String>  params = new HashMap<String, String>();
+                        params.put("content-type", "application/json");
+                        params.put("x-apikey", "2f9040149a55d3c3e6bfa3f356b6dec655137");
+                        params.put("cache-control","no-cache");
+
+                        return params;
+                    }
+                };
+
+                RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
+                namerequestQueue.add(jsonObjectRequest);
+
 
                 robot.goTo("shelf"+shelfNo);
                 robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
