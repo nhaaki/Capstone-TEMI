@@ -13,7 +13,7 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="30dp"
-        android:text="Wrong level, taking picture of user"
+        android:text="Wrong level - scanning user..."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="22sp" />

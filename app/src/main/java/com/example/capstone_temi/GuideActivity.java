@@ -31,10 +31,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.robotemi.sdk.NlpResult;
@@ -57,6 +59,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -82,9 +85,16 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookId; // Bookid from the req URL
     public String bookName; // BookName from the req URL
     public Robot robot;
+    public ImageButton back;
+
+    public TextView booknametxt;
+    public TextView bookidtxt;
+    public TextView taskfinishtxt;
    // public Bitmap imageReceived;
     public Context mcontext;
     public Boolean answer = true;
+
+
 
 
     /** Called when the activity is first created. */
@@ -99,11 +109,11 @@ public class GuideActivity extends AppCompatActivity implements
         } catch (IOException ioe) {
             Log.w("Httpd", "The server could not start.");
         }
-        Log.w("Httpd", "fghjkl");
+        Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
 
-        ImageButton back = findViewById(R.id.back);
+        back = findViewById(R.id.back);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,13 +183,52 @@ public class GuideActivity extends AppCompatActivity implements
 
 
             if(level.equals(levelNo)){
-                TextView booknametxt = findViewById(R.id.book_name);
-                TextView bookidtxt = findViewById(R.id.book_id);
+                booknametxt = findViewById(R.id.book_name);
+                bookidtxt = findViewById(R.id.book_id);
+                taskfinishtxt = findViewById(R.id.taskFinishTxt);
 
                 booknametxt.setText(bookName);
                 bookidtxt.setText(bookId);
+                taskfinishtxt.setText("We've reached shelf " + shelfNo + "! Your book should be nearby :)");
 
-                //appLinkIntent = null;
+                //appLinkIntent = null
+
+                String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
+                JSONObject postData = new JSONObject();
+                try {
+                    postData.put("level", level);
+                    postData.put("shelfno", shelfNo);
+                    postData.put("bookid", bookId);
+                    postData.put("bookname", bookName);
+                }catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String>  params = new HashMap<String, String>();
+                        params.put("content-type", "application/json");
+                        params.put("x-apikey", "2f9040149a55d3c3e6bfa3f356b6dec655137");
+                        params.put("cache-control","no-cache");
+
+                        return params;
+                    }
+                };
+
+                RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
+                namerequestQueue.add(jsonObjectRequest);
+
 
                 robot.goTo("shelf"+shelfNo);
                 robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
@@ -202,9 +251,10 @@ public class GuideActivity extends AppCompatActivity implements
             // For different Level TEMIs
             else{
 
+
                 // inflate the layout of the popup window
-                LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
-                View popupView = inflater.inflate(R.layout.popup2, null);
+                LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                View popupView = inflater.inflate(R.layout.popup3, null);
 
                 // create the popup window
                 int width = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -214,16 +264,26 @@ public class GuideActivity extends AppCompatActivity implements
 
                 // show the popup window
                 // which view you pass in doesn't matter, it is only used for the window tolken
-                popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
-                popupView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        popupWindow.dismiss();
-                        return true;
+
+                CountDownTimer waitTimer;
+                waitTimer = new CountDownTimer(3000, 1000) {
+                    public void onTick(long millisUntilFinished) {
                     }
-                });
+                    public void onFinish() {
+                        popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                popupWindow.dismiss();
+                                Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                return true;
+                            }
+                        });
 
 
+                    }
+                }.start();
 
 /*
                 // Launch take photo
@@ -369,6 +429,10 @@ public class GuideActivity extends AppCompatActivity implements
             public void onFinish() {
 
                 if(answer == true){
+                    answer = false;
+                    Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
+                    startActivity(launchIntent);
+                    popupWindow.dismiss();
                     robot.goTo("home base");
                 }
 
@@ -517,8 +581,36 @@ public class GuideActivity extends AppCompatActivity implements
                     startActivity(intent);
 
 
-                    JSONObject json = new JSONObject(data);
+ */
 
+                    JSONObject json = new JSONObject(data);
+                    bookId = json.getString("bookid");
+                    level = json.getString("level");
+                    shelfNo = json.getString("shelfno");
+                    bookName = json.getString("bookname");
+
+                    Log.w("lol", bookId);
+
+                    booknametxt.setText(bookName);
+                    bookidtxt.setText(bookId);
+
+                    //appLinkIntent = null;
+
+                    robot.goTo("shelf"+shelfNo);
+                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if(!location.equals("home base")){
+                                if(status.equals("complete")){
+                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                    r.play();
+                                    popup();
+                                }
+                            }
+                        }
+                    });
 
                     return newFixedLengthResponse(data);
                 } catch (IOException | ResponseException | JSONException e) {
