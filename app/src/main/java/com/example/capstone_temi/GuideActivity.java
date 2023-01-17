@@ -77,8 +77,7 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-
-    public String goserver = "http://192.168.43.244:10000";
+    public String goserver = "http://172.20.10.4:105";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -87,6 +86,7 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookName; // BookName from the req URL
     public Robot robot;
     public ImageButton back;
+    public boolean free;
 
     public TextView booknametxt;
     public TextView bookidtxt;
@@ -128,12 +128,20 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         handleIntent();
     }
 
     private void handleIntent(){
 
+
+
         Intent appLinkIntent = getIntent();
+
+        bookId = appLinkIntent.getStringExtra("bookId");
+        level = appLinkIntent.getStringExtra("level");
+        shelfNo = appLinkIntent.getStringExtra("shelfNo");
+        bookName = appLinkIntent.getStringExtra("bookName");
 
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
@@ -164,6 +172,17 @@ public class GuideActivity extends AppCompatActivity implements
 
                 }
             }
+
+
+
+//            String rawdata = appLinkData.getLastPathSegment();
+//            String[] data = rawdata.split(";",4 );
+//            level = data[0];
+//            shelfNo = data[1];
+//            bookName = data[2];
+//            bookId = data[3];
+
+
 
             if(level.equals(levelNo)){
                 booknametxt = findViewById(R.id.book_name);
@@ -341,6 +360,7 @@ public class GuideActivity extends AppCompatActivity implements
                 imageActivityResultLauncher.launch(intent);
 
  */
+
 
                 String requestUrl = goserver + "/wronglevel";
                 JSONObject postData = new JSONObject();
@@ -554,7 +574,7 @@ public class GuideActivity extends AppCompatActivity implements
                     String data = map.get("postData");
                     Context ctx=getApplicationContext();
 
-/*
+
                     Intent intent = new Intent(ctx, GuideActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
                     // the activity from a service
@@ -563,7 +583,7 @@ public class GuideActivity extends AppCompatActivity implements
                     startActivity(intent);
 
 
- */
+
 
                     JSONObject json = new JSONObject(data);
                     bookId = json.getString("bookid");
@@ -600,6 +620,7 @@ public class GuideActivity extends AppCompatActivity implements
                     e.printStackTrace();
                 }
             }
+
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
                     "The requested resource does not exist");
 
