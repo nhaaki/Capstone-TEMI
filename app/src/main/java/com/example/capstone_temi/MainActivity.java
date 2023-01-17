@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private MainActivity.WebServer server;
     public String url = "https://chen-han-np.github.io/Capstone-TEMI-Website-Demo/";
     public Robot robot;
+    public boolean free;
 
 
 
@@ -297,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
                     // the activity from a service
                     intent.setAction(Intent.ACTION_MAIN);
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    intent.putExtra("free", false);
                     startActivity(intent);
 
 

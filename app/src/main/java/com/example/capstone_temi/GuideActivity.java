@@ -86,6 +86,7 @@ public class GuideActivity extends AppCompatActivity implements
     public String bookName; // BookName from the req URL
     public Robot robot;
     public ImageButton back;
+    public boolean free;
 
     public TextView booknametxt;
     public TextView bookidtxt;
@@ -127,6 +128,7 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         handleIntent();
     }
 
@@ -581,7 +583,7 @@ public class GuideActivity extends AppCompatActivity implements
                     startActivity(intent);
 
 
- */
+
 
                     JSONObject json = new JSONObject(data);
                     bookId = json.getString("bookid");
