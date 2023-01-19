@@ -77,7 +77,8 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://172.20.10.4:105";
+   // public String goserver = "http://172.20.10.4:105";
+    public String goserver = "http://192.168.43.244:8080";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
