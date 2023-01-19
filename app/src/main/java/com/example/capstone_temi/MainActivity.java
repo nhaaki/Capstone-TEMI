@@ -59,9 +59,12 @@ public class MainActivity extends AppCompatActivity {
     public Robot robot;
     public boolean free;
 
+    //public String goserver = "http://172.20.10.4:105";
+    public String goserver = "http://192.168.43.244:8080";
 
 
-   //public Button takePhotoButton;
+
+    //public Button takePhotoButton;
    // public Button sendBut;
     //public ImageView imageSending;
     public TextView name;
@@ -70,10 +73,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageButton back;
    // public Bitmap imageReceived;
     public Button home;
-
-
     private static final int CAMERA_PIC_REQUEST = 1337;
-    public String goserver = "http://172.20.10.4:105";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
 
