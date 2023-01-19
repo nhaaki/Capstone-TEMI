@@ -138,14 +138,12 @@ public class GuideActivity extends AppCompatActivity implements
 
         Intent appLinkIntent = getIntent();
 
-        bookId = appLinkIntent.getStringExtra("bookId");
-        level = appLinkIntent.getStringExtra("level");
-        shelfNo = appLinkIntent.getStringExtra("shelfNo");
-        bookName = appLinkIntent.getStringExtra("bookName");
 
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
         //if(appLinkData != null){
+
+        // This code is ran through clicking of url + same level
         if(appLinkData != null){
 
             // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
@@ -413,6 +411,32 @@ public class GuideActivity extends AppCompatActivity implements
 
             }
 
+        }else{
+            bookId = appLinkIntent.getStringExtra("bookId");
+            level = appLinkIntent.getStringExtra("level");
+            shelfNo = appLinkIntent.getStringExtra("shelfNo");
+            bookName = appLinkIntent.getStringExtra("bookName");
+
+            if(level.equals(levelNo)) {
+
+                boolean difflevel = appLinkIntent.getBooleanExtra("difflevel", false);
+                if (difflevel) {
+                    robot.goTo("waitingarea");
+
+                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if (!location.equals("home base")) {
+                                if (status.equals("complete")) {
+                                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
         }
     }
 
