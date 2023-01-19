@@ -299,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.setAction(Intent.ACTION_MAIN);
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
                     intent.putExtra("free", false);
+                    intent.putExtra("difflevel", true);
                     startActivity(intent);
 
 

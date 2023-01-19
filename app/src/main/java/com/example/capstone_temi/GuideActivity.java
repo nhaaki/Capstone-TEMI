@@ -185,69 +185,91 @@ public class GuideActivity extends AppCompatActivity implements
 
 
             if(level.equals(levelNo)){
-                booknametxt = findViewById(R.id.book_name);
-                bookidtxt = findViewById(R.id.book_id);
-                taskfinishtxt = findViewById(R.id.taskFinishTxt);
 
-                booknametxt.setText(bookName);
-                bookidtxt.setText(bookId);
-                taskfinishtxt.setText("We've reached shelf " + shelfNo + "! Your book should be nearby :)");
+                boolean difflevel = appLinkIntent.getBooleanExtra("difflevel", false);
+                if(difflevel){
+                    robot.goTo("waitingarea");
 
-                //appLinkIntent = null
-
-                String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
-                JSONObject postData = new JSONObject();
-                try {
-                    postData.put("level", level);
-                    postData.put("shelfno", shelfNo);
-                    postData.put("bookid", bookId);
-                    postData.put("bookname", bookName);
-                }catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }){
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String>  params = new HashMap<String, String>();
-                        params.put("content-type", "application/json");
-                        params.put("x-apikey", "2f9040149a55d3c3e6bfa3f356b6dec655137");
-                        params.put("cache-control","no-cache");
-
-                        return params;
-                    }
-                };
-
-                RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
-                namerequestQueue.add(jsonObjectRequest);
-
-
-                robot.goTo("shelf"+shelfNo);
-                robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
-                    @Override
-                    public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
-                       // If the TEMI is not returned to the home base yet
-                        if(!location.equals("home base")){
-                            if(status.equals("complete")){
-                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                r.play();
-
-                                popup();
+                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if(!location.equals("home base")){
+                                if(status.equals("complete")){
+                                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
+                                    startActivity(intent);
+                                }
                             }
                         }
+                    });
+                }else{
+
+                    booknametxt = findViewById(R.id.book_name);
+                    bookidtxt = findViewById(R.id.book_id);
+                    taskfinishtxt = findViewById(R.id.taskFinishTxt);
+
+                    booknametxt.setText(bookName);
+                    bookidtxt.setText(bookId);
+                    taskfinishtxt.setText("We've reached shelf " + shelfNo + "! Your book should be nearby :)");
+
+                    //appLinkIntent = null
+
+                    String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
+                    JSONObject postData = new JSONObject();
+                    try {
+                        postData.put("level", level);
+                        postData.put("shelfno", shelfNo);
+                        postData.put("bookid", bookId);
+                        postData.put("bookname", bookName);
+                    }catch (JSONException e)
+                    {
+                        e.printStackTrace();
                     }
-                });
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    }){
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            Map<String, String>  params = new HashMap<String, String>();
+                            params.put("content-type", "application/json");
+                            params.put("x-apikey", "2f9040149a55d3c3e6bfa3f356b6dec655137");
+                            params.put("cache-control","no-cache");
+
+                            return params;
+                        }
+                    };
+
+                    RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
+                    namerequestQueue.add(jsonObjectRequest);
+
+
+                    robot.goTo("shelf"+shelfNo);
+                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if(!location.equals("home base")){
+                                if(status.equals("complete")){
+                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                    r.play();
+
+                                    popup();
+                                }
+                            }
+                        }
+                    });
+
+                }
+
             }
 
             // For different Level TEMIs
