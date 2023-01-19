@@ -290,10 +290,17 @@ public class MainActivity extends AppCompatActivity {
                     final HashMap<String, String> map = new HashMap<String, String>();
                     session.parseBody(map);
                     String data = map.get("postData");
+                    Log.w("Httpd", data);
+                    JSONObject json = new JSONObject(data);
+
                     Context ctx=getApplicationContext();
 
 
                     Intent intent = new Intent(ctx, GuideActivity.class);
+                    intent.putExtra("bookId", json.getString("bookid"));
+                    intent.putExtra("level", json.getString("level"));
+                    intent.putExtra("shelfNo", json.getString("shelfno"));
+                    intent.putExtra("bookName", json.getString("bookname"));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
                     // the activity from a service
                     intent.setAction(Intent.ACTION_MAIN);
@@ -302,8 +309,6 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("difflevel", true);
                     startActivity(intent);
 
-
-                    JSONObject json = new JSONObject(data);
 
 
                     return newFixedLengthResponse("fghjk");
