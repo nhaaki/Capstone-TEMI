@@ -40,7 +40,6 @@ public class FaceVerificationActivity extends AppCompatActivity {
     public Button takePicBtn2;
     public ActivityResultLauncher<Intent> imageActivityResultLauncher;
     public Bitmap imageReceived;
-    //public String goserver = "http://172.20.10.7:8080";
     public String goserver = "http://192.168.43.244:8080";
 
     @Override
