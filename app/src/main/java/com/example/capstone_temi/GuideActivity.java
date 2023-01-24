@@ -494,7 +494,7 @@ public class GuideActivity extends AppCompatActivity implements
                 answer = false;
                 Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                 if (launchIntent != null) {
-                    Log.w("jy", "your mum");
+
                     startActivity(launchIntent);//null pointer check in case package name was not found
                 }
             }

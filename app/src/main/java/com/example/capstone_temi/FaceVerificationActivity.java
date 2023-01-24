@@ -6,14 +6,18 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.FaceDetector;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 public class FaceVerificationActivity extends AppCompatActivity {
 
@@ -40,6 +46,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
     public Button takePicBtn2;
     public ActivityResultLauncher<Intent> imageActivityResultLauncher;
     public Bitmap imageReceived;
+    private String currentphotopath;
     //public String goserver = "http://172.20.10.7:8080";
     public String goserver = "http://192.168.43.244:8080";
 
@@ -112,9 +119,20 @@ public class FaceVerificationActivity extends AppCompatActivity {
         takePicBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                imageActivityResultLauncher.launch(intent);
+                String fileName = "photo";
+                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
+                try{
+                    File imageFile = File.createTempFile(fileName, ".jpg", storageDirectory);
+                    currentphotopath = imageFile.getAbsolutePath();
+                    Uri imageUri = FileProvider.getUriForFile(FaceVerificationActivity.this, "com.example.myapplication.fileprovider", imageFile);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                    imageActivityResultLauncher.launch(intent);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
             }
         });
 
