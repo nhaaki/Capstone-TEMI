@@ -11,6 +11,8 @@ import androidx.core.content.FileProvider;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.camera2.CameraAccessException;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Build;
@@ -65,8 +67,8 @@ public class FaceVerificationActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            imageReceived = (Bitmap) data.getExtras().get("data");
+                            imageReceived = BitmapFactory.decodeFile(currentphotopath);
+
 
                             CountDownTimer waitTimer;
                             waitTimer = new CountDownTimer(3000, 1000) {
@@ -125,7 +127,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
                 try{
                     File imageFile = File.createTempFile(fileName, ".jpg", storageDirectory);
                     currentphotopath = imageFile.getAbsolutePath();
-                    Uri imageUri = FileProvider.getUriForFile(FaceVerificationActivity.this, "com.example.myapplication.fileprovider", imageFile);
+                    Uri imageUri = FileProvider.getUriForFile(FaceVerificationActivity.this, "com.example.capstone_temi.fileprovider", imageFile);
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
                     imageActivityResultLauncher.launch(intent);
