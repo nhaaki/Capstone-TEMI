@@ -70,6 +70,15 @@
                     android:scheme="temi" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:authorities="com.example.capstone_temi.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
     </application>
 
 </manifest>
