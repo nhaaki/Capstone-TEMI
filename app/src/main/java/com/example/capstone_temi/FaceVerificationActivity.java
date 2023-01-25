@@ -76,7 +76,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
                                 public void onTick(long millisUntilFinished) {
                                     if (imageReceived != null) {
                                         // Send the image in json
-                                        String requestUrl = goserver + "/receiveimage";
+                                        String requestUrl = goserver + "/faceverification";
                                         JSONObject postData = new JSONObject();
 
                                         // Encode the bitmap
