@@ -231,7 +231,7 @@ public class GuideActivity extends AppCompatActivity implements
                 }
             // For different Level TEMIs
             else{
-
+                Log.v("suck", "bruh");
                 ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                         new ActivityResultCallback<ActivityResult>() {
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -256,6 +256,7 @@ public class GuideActivity extends AppCompatActivity implements
                                     waitTimer = new CountDownTimer(3000, 1000) {
 
                                         public void onTick(long millisUntilFinished) {
+                                            Log.v("suck", "bruh");
                                             if (imageReceived != null) {
                                                 // Send the image in json
                                                 String requestUrl = goserver + "/receiveimage";
@@ -317,83 +318,56 @@ public class GuideActivity extends AppCompatActivity implements
 
                         });
 
-                // inflate the layout of the popup window
-                LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
-                View popupView = inflater.inflate(R.layout.popup2, null);
+                        // inflate the layout of the popup window
+                        LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                        View popupView = inflater.inflate(R.layout.popup2, null);
 
-                // create the popup window
-                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                boolean focusable = true; // lets taps outside the popup also dismiss it
-                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+                        // create the popup window
+                        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                        boolean focusable = true; // lets taps outside the popup also dismiss it
+                        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
-                // show the popup window
-                // which view you pass in doesn't matter, it is only used for the window tolken
+                        // show the popup window
+                        // which view you pass in doesn't matter, it is only used for the window tolken
+                        Log.v("suck", "bro");
 
-                CountDownTimer waitTimer;
-                waitTimer = new CountDownTimer(3000, 1000) {
 
-                    public void onTick(long millisUntilFinished) {
+                        CountDownTimer waitTimer;
+                        waitTimer = new CountDownTimer(3000, 1000) {
 
-                    }
+                            public void onTick(long millisUntilFinished) {
+                                Log.v("suck", "bruh");
 
-                    public void onFinish() {
-                        popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
-                        popupView.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                popupWindow.dismiss();
-                                String fileName = "photo";
-                                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-                                try{
-                                    File imageFile = File.createTempFile(fileName, ".jpg", storageDirectory);
-                                    currentphotopath = imageFile.getAbsolutePath();
-                                    Uri imageUri = FileProvider.getUriForFile(GuideActivity.this, "com.example.capstone_temi.fileprovider", imageFile);
-                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
-                                    imageActivityResultLauncher.launch(intent);
-                                }
-                                catch (IOException e){
-                                    e.printStackTrace();
-                                }
-                                return true;
                             }
-                        });
+
+                            public void onFinish() {
+                                popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                                popupView.setOnTouchListener(new View.OnTouchListener() {
+                                    @Override
+                                    public boolean onTouch(View v, MotionEvent event) {
+                                        popupWindow.dismiss();
+                                        String fileName = "photo";
+                                        File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+                                        try{
+                                            File imageFile = File.createTempFile(fileName, ".jpg", storageDirectory);
+                                            currentphotopath = imageFile.getAbsolutePath();
+                                            Uri imageUri = FileProvider.getUriForFile(GuideActivity.this, "com.example.capstone_temi.fileprovider", imageFile);
+                                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                            intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                                            imageActivityResultLauncher.launch(intent);
+                                        }
+                                        catch (IOException e){
+                                            e.printStackTrace();
+                                        }
+                                        return true;
+                                    }
+                                });
 
 
-                    }
-                }.start();
-
-
-
-
-                String requestUrl = goserver + "/wronglevel";
-                JSONObject postData = new JSONObject();
-                try {
-                    postData.put("level", level);
-                    postData.put("shelfno", shelfNo);
-                    postData.put("bookid", bookId);
-                    postData.put("bookname", bookName);
-
-                }catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-
-                RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
-                namerequestQueue.add(jsonObjectRequest);
+                            }
+                        }.start();
 
                 }
             }else{
