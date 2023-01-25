@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,6 +33,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -54,6 +58,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -86,6 +91,8 @@ public class GuideActivity extends AppCompatActivity implements
     public Robot robot;
     public ImageButton back;
     public boolean free;
+    private String currentphotopath;
+    public Bitmap imageReceived;
 
     public TextView booknametxt;
     public TextView bookidtxt;
@@ -222,16 +229,97 @@ public class GuideActivity extends AppCompatActivity implements
                 });
 
                 }
-
-
-
             // For different Level TEMIs
             else{
 
+                ActivityResultLauncher<Intent> imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                        new ActivityResultCallback<ActivityResult>() {
+                            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                            @Override
+                            public void onActivityResult(ActivityResult result) {
+                                if (result.getResultCode() == Activity.RESULT_OK) {
+                                    imageReceived = BitmapFactory.decodeFile(currentphotopath);
+
+
+                                    // inflate the layout of the popup window
+
+                                    LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                                    View popupView = inflater.inflate(R.layout.popup3, null);
+
+                                    // create the popup window
+                                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                    boolean focusable = true; // lets taps outside the popup also dismiss it
+                                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                                    CountDownTimer waitTimer;
+                                    waitTimer = new CountDownTimer(3000, 1000) {
+
+                                        public void onTick(long millisUntilFinished) {
+                                            if (imageReceived != null) {
+                                                // Send the image in json
+                                                String requestUrl = goserver + "/receiveimage";
+                                                JSONObject postData = new JSONObject();
+
+                                                // Encode the bitmap
+                                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                                byte[] imageBytes = baos.toByteArray();
+                                                String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+                                                try {
+                                                    postData.put("image", encodedImage);
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                                                    @Override
+                                                    public void onResponse(JSONObject response) {
+                                                        Log.v("jy", "ugu");
+                                                    }
+                                                }, new Response.ErrorListener() {
+                                                    @Override
+                                                    public void onErrorResponse(VolleyError error) {
+                                                        error.printStackTrace();
+                                                    }
+                                                });
+                                                RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
+                                                nameRequestQueue.add(jsonObjectRequest);
+                                            }
+
+                                        }
+
+                                        public void onFinish() {
+
+
+
+                                            // show the popup window
+                                            // which view you pass in doesn't matter, it is only used for the window tolken
+                                            popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                                            popupView.setOnTouchListener(new View.OnTouchListener() {
+                                                @Override
+                                                public boolean onTouch(View v, MotionEvent event) {
+                                                    popupWindow.dismiss();
+                                                    Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                                    startActivity(intent);
+                                                    return true;
+                                                }
+                                            });
+
+
+
+                                        }
+                                    }.start();
+
+
+                                }
+                            }
+
+                        });
 
                 // inflate the layout of the popup window
                 LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
-                View popupView = inflater.inflate(R.layout.popup3, null);
+                View popupView = inflater.inflate(R.layout.popup2, null);
 
                 // create the popup window
                 int width = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -244,16 +332,31 @@ public class GuideActivity extends AppCompatActivity implements
 
                 CountDownTimer waitTimer;
                 waitTimer = new CountDownTimer(3000, 1000) {
+
                     public void onTick(long millisUntilFinished) {
+
                     }
+
                     public void onFinish() {
                         popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
                         popupView.setOnTouchListener(new View.OnTouchListener() {
                             @Override
                             public boolean onTouch(View v, MotionEvent event) {
                                 popupWindow.dismiss();
-                                Intent intent = new Intent(GuideActivity.this, MainActivity.class);
-                                startActivity(intent);
+                                String fileName = "photo";
+                                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+                                try{
+                                    File imageFile = File.createTempFile(fileName, ".jpg", storageDirectory);
+                                    currentphotopath = imageFile.getAbsolutePath();
+                                    Uri imageUri = FileProvider.getUriForFile(GuideActivity.this, "com.example.capstone_temi.fileprovider", imageFile);
+                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                                    imageActivityResultLauncher.launch(intent);
+                                }
+                                catch (IOException e){
+                                    e.printStackTrace();
+                                }
                                 return true;
                             }
                         });
@@ -261,6 +364,7 @@ public class GuideActivity extends AppCompatActivity implements
 
                     }
                 }.start();
+
 
 
 
