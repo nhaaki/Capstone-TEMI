@@ -264,7 +264,7 @@ public class GuideActivity extends AppCompatActivity implements
 
                                                 // Encode the bitmap
                                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                                                 byte[] imageBytes = baos.toByteArray();
                                                 String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
@@ -286,6 +286,8 @@ public class GuideActivity extends AppCompatActivity implements
                                                 });
                                                 RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
                                                 nameRequestQueue.add(jsonObjectRequest);
+                                                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                                                deleteTempFiles(storageDirectory);
                                             }
 
                                         }
@@ -484,6 +486,22 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().addOnLocationsUpdatedListener(this);
         MapDataModel locations = robot.getMapData();
 
+    }
+
+    private boolean deleteTempFiles(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isDirectory()) {
+                        deleteTempFiles(f);
+                    } else {
+                        f.delete();
+                    }
+                }
+            }
+        }
+        return file.delete();
     }
 
 
