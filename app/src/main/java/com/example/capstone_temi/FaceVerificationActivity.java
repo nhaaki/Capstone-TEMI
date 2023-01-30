@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -49,8 +50,8 @@ public class FaceVerificationActivity extends AppCompatActivity {
     public ActivityResultLauncher<Intent> imageActivityResultLauncher;
     public Bitmap imageReceived;
     private String currentphotopath;
-    //public String goserver = "http://172.20.10.7:8080";
-    public String goserver = "http://192.168.43.244:8080";
+    public String goserver = "http://192.168.43.240:8080";
+    //public String goserver = "http://192.168.43.244:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,51 +69,51 @@ public class FaceVerificationActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             imageReceived = BitmapFactory.decodeFile(currentphotopath);
+                            if (imageReceived != null) {
+                                // Send the image in json
+                                String requestUrl = goserver + "/faceverification";
+                                JSONObject postData = new JSONObject();
 
+                                // Encode the bitmap
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                                byte[] imageBytes = baos.toByteArray();
+                                String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
-                            CountDownTimer waitTimer;
-                            waitTimer = new CountDownTimer(3000, 1000) {
-
-                                public void onTick(long millisUntilFinished) {
-                                    if (imageReceived != null) {
-                                        // Send the image in json
-                                        String requestUrl = goserver + "/faceverification";
-                                        JSONObject postData = new JSONObject();
-
-                                        // Encode the bitmap
-                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                        imageReceived.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-                                        byte[] imageBytes = baos.toByteArray();
-                                        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-                                        try {
-                                            postData.put("image", encodedImage);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                                Log.v("jy", "ugu");
-                                            }
-                                        }, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                error.printStackTrace();
-                                            }
-                                        });
-                                        RequestQueue nameRequestQueue = Volley.newRequestQueue(FaceVerificationActivity.this);
-                                        nameRequestQueue.add(jsonObjectRequest);
-                                        File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                                        deleteTempFiles(storageDirectory);
+                                try {
+                                    postData.put("image", encodedImage);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        Log.v("jinyang", "zxcvbnmk");
 
                                     }
-                                }
-                                public void onFinish() {
-                                    Intent intent = new Intent(FaceVerificationActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                }
-                            }.start();
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.v("jinyang", "qwerty");
+                                        error.printStackTrace();
+                                    }
+                                });
+                                int TIMEOUT_MS=10000;     //10 seconds
+
+                                jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                                        TIMEOUT_MS,
+                                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+                                RequestQueue nameRequestQueue = Volley.newRequestQueue(FaceVerificationActivity.this);
+                                nameRequestQueue.add(jsonObjectRequest);
+                                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                                deleteTempFiles(storageDirectory);
+                            }
+
+
+
+
 
                         }
                     }

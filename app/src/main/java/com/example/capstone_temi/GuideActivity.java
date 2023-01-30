@@ -81,7 +81,8 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
-    public String goserver = "http://192.168.43.244:8080";
+    //public String goserver = "http://192.168.43.244:8080";
+    public String goserver = "http://192.168.43.240:8080";
     public int portNumber = 8080;
     public String levelNo = "3"; //TEMI current level
     public String level; // Level from the req URL
@@ -239,6 +240,66 @@ public class GuideActivity extends AppCompatActivity implements
                             public void onActivityResult(ActivityResult result) {
                                 if (result.getResultCode() == Activity.RESULT_OK) {
                                     imageReceived = BitmapFactory.decodeFile(currentphotopath);
+                                    if (imageReceived != null) {
+                                        // Send the image in json
+                                        String requestUrl = goserver + "/receiveimage";
+                                        JSONObject postData = new JSONObject();
+
+                                        // Encode the bitmap
+                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                        imageReceived.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                                        byte[] imageBytes = baos.toByteArray();
+                                        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+                                        try {
+                                            postData.put("image", encodedImage);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                Log.v("jy", "ugu");
+                                            }
+                                        }, new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                error.printStackTrace();
+                                            }
+                                        });
+                                        RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
+                                        nameRequestQueue.add(jsonObjectRequest);
+                                        File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                                        deleteTempFiles(storageDirectory);
+
+                                        String wronglevelUrl = goserver + "/wronglevel";
+                                        JSONObject bookData = new JSONObject();
+
+                                        try {
+                                            postData.put("level", level);
+                                            postData.put("shelfno", shelfNo);
+                                            postData.put("bookid", bookId);
+                                            postData.put("bookname", bookName);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        JsonObjectRequest wronglevelRequest = new JsonObjectRequest(Request.Method.POST, wronglevelUrl, bookData, new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                Log.v("jy", "ugu");
+                                            }
+                                        }, new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                error.printStackTrace();
+                                            }
+                                        });
+
+                                        nameRequestQueue.add(wronglevelRequest);
+
+
+                                    }
 
 
                                     // inflate the layout of the popup window
@@ -256,39 +317,7 @@ public class GuideActivity extends AppCompatActivity implements
                                     waitTimer = new CountDownTimer(3000, 1000) {
 
                                         public void onTick(long millisUntilFinished) {
-                                            Log.v("suck", "bruh");
-                                            if (imageReceived != null) {
-                                                // Send the image in json
-                                                String requestUrl = goserver + "/receiveimage";
-                                                JSONObject postData = new JSONObject();
 
-                                                // Encode the bitmap
-                                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-                                                byte[] imageBytes = baos.toByteArray();
-                                                String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-                                                try {
-                                                    postData.put("image", encodedImage);
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
-                                                    @Override
-                                                    public void onResponse(JSONObject response) {
-                                                        Log.v("jy", "ugu");
-                                                    }
-                                                }, new Response.ErrorListener() {
-                                                    @Override
-                                                    public void onErrorResponse(VolleyError error) {
-                                                        error.printStackTrace();
-                                                    }
-                                                });
-                                                RequestQueue nameRequestQueue = Volley.newRequestQueue(GuideActivity.this);
-                                                nameRequestQueue.add(jsonObjectRequest);
-                                                File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                                                deleteTempFiles(storageDirectory);
-                                            }
 
                                         }
 
@@ -382,20 +411,22 @@ public class GuideActivity extends AppCompatActivity implements
 
                 boolean difflevel = appLinkIntent.getBooleanExtra("difflevel", false);
                 if (difflevel) {
-                    robot.goTo("waitingarea");
+                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
+                    startActivity(intent);
+                    //robot.goTo("waitingarea");
 
-                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
-                        @Override
-                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
-                            // If the TEMI is not returned to the home base yet
-                            if (!location.equals("home base")) {
-                                if (status.equals("complete")) {
-                                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
-                                    startActivity(intent);
-                                }
-                            }
-                        }
-                    });
+//                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+//                        @Override
+//                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+//                            // If the TEMI is not returned to the home base yet
+//                            if (!location.equals("home base")) {
+//                                if (status.equals("complete")) {
+//                                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
+//                                    startActivity(intent);
+//                                }
+//                            }
+//                        }
+//                    });
                 }
             }
         }
