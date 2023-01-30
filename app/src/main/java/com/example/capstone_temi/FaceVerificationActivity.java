@@ -99,7 +99,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
 
                                 // Encode the bitmap
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                                imageReceived.compress(Bitmap.CompressFormat.JPEG, 60, baos);
                                 byte[] imageBytes = baos.toByteArray();
                                 String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
