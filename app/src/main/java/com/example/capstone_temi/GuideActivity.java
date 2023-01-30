@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -140,8 +141,13 @@ public class GuideActivity extends AppCompatActivity implements
         Intent appLinkIntent = getIntent();
         Uri appLinkData = appLinkIntent.getData();
 
+        String vbookId = appLinkIntent.getStringExtra("verifiedBookId");
+        String vlevel = appLinkIntent.getStringExtra("verifiedLevel");
+        String vshelfNo = appLinkIntent.getStringExtra("verifiedShelfNo");
+        String vbookName = appLinkIntent.getStringExtra("verifiedBookName");
+
         // This code is ran through clicking of url + same level
-        if(appLinkData != null){
+        if(appLinkData != null || !vbookId.equals(null)){
 
             // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
             String rawdata = appLinkData.getLastPathSegment();
@@ -287,7 +293,16 @@ public class GuideActivity extends AppCompatActivity implements
                                         JsonObjectRequest wronglevelRequest = new JsonObjectRequest(Request.Method.POST, wronglevelUrl, bookData, new Response.Listener<JSONObject>() {
                                             @Override
                                             public void onResponse(JSONObject response) {
-                                                Log.v("jy", "ugu");
+                                                try {
+                                                    String res = response.getString("response");
+                                                    String rescode = response.getString("response_code");
+
+                                                    if (rescode.equals("409")){
+                                                        Toast.makeText(getApplicationContext(),res,Toast.LENGTH_SHORT).show();
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }, new Response.ErrorListener() {
                                             @Override
@@ -412,7 +427,12 @@ public class GuideActivity extends AppCompatActivity implements
                 boolean difflevel = appLinkIntent.getBooleanExtra("difflevel", false);
                 if (difflevel) {
                     Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
+                    intent.putExtra("bookName", bookName);
+                    intent.putExtra("level", level);
+                    intent.putExtra("shelfNo", shelfNo);
+                    intent.putExtra("bookId", bookId);
                     startActivity(intent);
+
                     //robot.goTo("waitingarea");
 
 //                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
@@ -610,57 +630,8 @@ public class GuideActivity extends AppCompatActivity implements
         public Response serve(IHTTPSession session) {
 
             if (session.getMethod() == Method.POST) {
-                try {
-                    final HashMap<String, String> map = new HashMap<String, String>();
-                    session.parseBody(map);
-                    String data = map.get("postData");
-                    Context ctx=getApplicationContext();
 
-
-                    Intent intent = new Intent(ctx, GuideActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
-                    // the activity from a service
-                    intent.setAction(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                    startActivity(intent);
-
-
-
-
-                    JSONObject json = new JSONObject(data);
-                    bookId = json.getString("bookid");
-                    level = json.getString("level");
-                    shelfNo = json.getString("shelfno");
-                    bookName = json.getString("bookname");
-
-                    Log.w("lol", bookId);
-
-                    booknametxt.setText(bookName);
-                    bookidtxt.setText(bookId);
-
-                    //appLinkIntent = null;
-
-                    robot.goTo("shelf"+shelfNo);
-                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
-                        @Override
-                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
-                            // If the TEMI is not returned to the home base yet
-                            if(!location.equals("home base")){
-                                if(status.equals("complete")){
-                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                    r.play();
-                                    popup();
-                                }
-                            }
-                        }
-                    });
-
-                    return newFixedLengthResponse(data);
-                } catch (IOException | ResponseException | JSONException e) {
-                    // handle
-                    e.printStackTrace();
-                }
+                    return newFixedLengthResponse(Response.Status.CONFLICT, MIME_PLAINTEXT, "This Temi is currently in use, come back later!");
             }
 
             return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,

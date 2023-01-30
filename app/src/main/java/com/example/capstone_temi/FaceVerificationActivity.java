@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -42,6 +43,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import fi.iki.elonen.NanoHTTPD;
+
 public class FaceVerificationActivity extends AppCompatActivity {
 
     public TextView name;
@@ -52,6 +55,12 @@ public class FaceVerificationActivity extends AppCompatActivity {
     private String currentphotopath;
     public String goserver = "http://192.168.43.240:8080";
     //public String goserver = "http://192.168.43.244:8080";
+    public String level; // Level from the req URL
+    public String shelfNo; // Shelf No from the req URL
+    public String bookId; // Bookid from the req URL
+    public String bookName; // BookName from the req URL
+    public int portNumber = 8080;
+    private WebServer server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +69,20 @@ public class FaceVerificationActivity extends AppCompatActivity {
 
         goBackBtn = (ImageButton) findViewById(R.id.backBtn2);
         takePicBtn2 = (Button) findViewById(R.id.takePicBtn2);
+
+        server = new WebServer();
+        try {
+            server.start();
+        } catch (IOException ioe) {
+            Log.w("Httpd", "The server could not start.");
+        }
+        Log.w("Httpd", "Web server initialized.");
+
+        Intent appLinkIntent = getIntent();
+        bookId = appLinkIntent.getStringExtra("bookId");
+        level = appLinkIntent.getStringExtra("level");
+        shelfNo = appLinkIntent.getStringExtra("shelfNo");
+        bookName = appLinkIntent.getStringExtra("bookName");
 
 
         imageActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -89,6 +112,24 @@ public class FaceVerificationActivity extends AppCompatActivity {
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         Log.v("jinyang", "zxcvbnmk");
+                                        Boolean verified = null;
+                                        try {
+                                            verified = response.getBoolean("result");
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        if(verified){
+                                            Intent intent = new Intent(FaceVerificationActivity.this, GuideActivity.class);
+                                            intent.putExtra("verifiedBookName", bookName);
+                                            intent.putExtra("verifiedLevel", level);
+                                            intent.putExtra("verifiedShelfNo", shelfNo);
+                                            intent.putExtra("verifiedBookId", bookId);
+                                            startActivity(intent);
+                                        }
+                                        else{
+                                            Toast.makeText(getApplicationContext(),"Face not verified - try again.",Toast.LENGTH_SHORT).show();
+                                        }
 
                                     }
                                 }, new Response.ErrorListener() {
@@ -164,5 +205,28 @@ public class FaceVerificationActivity extends AppCompatActivity {
             }
         }
         return file.delete();
+    }
+
+    private class WebServer extends NanoHTTPD {
+
+        public WebServer()
+        {
+            super(portNumber);
+        }
+
+        @Override
+        public Response serve(IHTTPSession session) {
+
+            if (session.getMethod() == Method.POST) {
+
+                return newFixedLengthResponse(Response.Status.CONFLICT, MIME_PLAINTEXT, "This Temi is currently in use, come back later!");
+            }
+
+            return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
+                    "The requested resource does not exist");
+
+        }
+
+
     }
 }
