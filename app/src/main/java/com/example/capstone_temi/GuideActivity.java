@@ -82,6 +82,7 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
     private WebServer server;
+    public OnGoToLocationStatusChangedListener listerner;
     //public String goserver = "http://192.168.43.244:8080";
     public String goserver = "http://192.168.43.240:8080";
     public int portNumber = 8080;
@@ -120,6 +121,10 @@ public class GuideActivity extends AppCompatActivity implements
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
 
+
+
+
+
         back = findViewById(R.id.back);
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -146,8 +151,10 @@ public class GuideActivity extends AppCompatActivity implements
         String vshelfNo = appLinkIntent.getStringExtra("verifiedShelfNo");
         String vbookName = appLinkIntent.getStringExtra("verifiedBookName");
 
+
+
         // This code is ran through clicking of url + same level
-        if(appLinkData != null || !vbookId.equals(null)){
+        if(appLinkData != null){
 
             // "http://temibot.com/level/level=3&shelfno=1&bookname=Michelle%20Obama's%20Life%20%26%20Experience&bookid=E909%2E%20O24%20O12%20PBK"
             String rawdata = appLinkData.getLastPathSegment();
@@ -158,6 +165,7 @@ public class GuideActivity extends AppCompatActivity implements
                 String key = dataPair[0];
                 if (key.equals("level")) {
                     level = dataPair[1];
+                    Log.v("JinYang", level);
                 }
                 else if (key.equals("shelfno")) {
                     shelfNo = dataPair[1];
@@ -416,6 +424,72 @@ public class GuideActivity extends AppCompatActivity implements
                         }.start();
 
                 }
+            }else if(vbookId != null){
+            Log.v("jin", vbookName);
+
+            booknametxt = findViewById(R.id.book_name);
+            bookidtxt = findViewById(R.id.book_id);
+            taskfinishtxt = findViewById(R.id.taskFinishTxt);
+
+            booknametxt.setText(vbookName);
+            bookidtxt.setText(vbookId);
+            taskfinishtxt.setText("We've reached shelf " + vshelfNo + "! Your book should be nearby :)");
+
+
+            String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
+            JSONObject postData = new JSONObject();
+            try {
+                postData.put("level", vlevel);
+                postData.put("shelfno", vshelfNo);
+                postData.put("bookid", vbookId);
+                postData.put("bookname", vbookName);
+            }catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, requestUrl, postData, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String>  params = new HashMap<String, String>();
+                    params.put("content-type", "application/json");
+                    params.put("x-apikey", "2f9040149a55d3c3e6bfa3f356b6dec655137");
+                    params.put("cache-control","no-cache");
+
+                    return params;
+                }
+            };
+
+            RequestQueue namerequestQueue = Volley.newRequestQueue(GuideActivity.this);
+            namerequestQueue.add(jsonObjectRequest);
+
+
+            robot.goTo("shelf"+vshelfNo);
+            robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
+                @Override
+                public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                    // If the TEMI has not returned to the home base yet
+                    if(!location.equals("home base")){
+                        if(status.equals("complete")){
+                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                            r.play();
+
+                            popup();
+                        }
+                    }
+                }
+            });
+
             }else{
             bookId = appLinkIntent.getStringExtra("bookId");
             level = appLinkIntent.getStringExtra("level");
@@ -426,27 +500,28 @@ public class GuideActivity extends AppCompatActivity implements
 
                 boolean difflevel = appLinkIntent.getBooleanExtra("difflevel", false);
                 if (difflevel) {
-                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
-                    intent.putExtra("bookName", bookName);
-                    intent.putExtra("level", level);
-                    intent.putExtra("shelfNo", shelfNo);
-                    intent.putExtra("bookId", bookId);
-                    startActivity(intent);
 
-                    //robot.goTo("waitingarea");
+                    robot.goTo("waitingarea");
 
-//                    robot.addOnGoToLocationStatusChangedListener(new OnGoToLocationStatusChangedListener() {
-//                        @Override
-//                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
-//                            // If the TEMI is not returned to the home base yet
-//                            if (!location.equals("home base")) {
-//                                if (status.equals("complete")) {
-//                                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
-//                                    startActivity(intent);
-//                                }
-//                            }
-//                        }
-//                    });
+
+                    listerner = new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if (!location.equals("home base")) {
+                                if (status.equals("complete")) {
+                                    Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
+                                    intent.putExtra("bookName", bookName);
+                                    intent.putExtra("level", level);
+                                    intent.putExtra("shelfNo", shelfNo);
+                                    intent.putExtra("bookId", bookId);
+                                    robot.removeOnGoToLocationStatusChangedListener(listerner);
+                                    startActivity(intent);
+                                }
+                            }
+                        }
+                    };
+                    robot.addOnGoToLocationStatusChangedListener(listerner);
                 }
             }
         }
@@ -554,6 +629,8 @@ public class GuideActivity extends AppCompatActivity implements
         }
         return file.delete();
     }
+
+
 
 
 
