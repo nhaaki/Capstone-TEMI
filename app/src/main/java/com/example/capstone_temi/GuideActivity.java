@@ -3,6 +3,7 @@ package com.example.capstone_temi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Ringtone;
@@ -36,6 +37,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -63,6 +65,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +86,7 @@ public class GuideActivity extends AppCompatActivity implements
         OnGoToLocationStatusChangedListener,
         OnLocationsUpdatedListener
 {
-    private WebServer server;
+
     public OnGoToLocationStatusChangedListener listerner;
     //public String goserver = "http://192.168.43.244:8080";
     public String goserver = "http://192.168.43.240:8080";
@@ -101,6 +106,7 @@ public class GuideActivity extends AppCompatActivity implements
     public TextView bookidtxt;
     public TextView taskfinishtxt;
     public Boolean answer = true;
+    public LottieAnimationView lottieAV;
 
 
 
@@ -109,14 +115,16 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("busy", true);
+        editor.apply();
         setContentView(R.layout.activity_guide);
         robot = Robot.getInstance();
-        server = new WebServer();
-        try {
-            server.start();
-        } catch (IOException ioe) {
-            Log.w("Httpd", "The server could not start.");
-        }
+        lottieAV = findViewById(R.id.animationView);
+        lottieAV.setVisibility(View.INVISIBLE);
+
         Log.w("Httpd", "Web server initialized.");
         // ATTENTION: This was auto-generated to handle app links.
         handleIntent();
@@ -190,12 +198,14 @@ public class GuideActivity extends AppCompatActivity implements
 
 
                 String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
+                Date currentTime = Calendar.getInstance().getTime();
                 JSONObject postData = new JSONObject();
                 try {
                     postData.put("level", level);
                     postData.put("shelfno", shelfNo);
                     postData.put("bookid", bookId);
                     postData.put("bookname", bookName);
+                    postData.put("searchedDateTime", currentTime);
                 }catch (JSONException e)
                 {
                     e.printStackTrace();
@@ -236,6 +246,9 @@ public class GuideActivity extends AppCompatActivity implements
                                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                                 r.play();
+
+                                lottieAV = findViewById(R.id.animationView);
+                                lottieAV.setVisibility(View.VISIBLE);
 
                                 popup();
                             }
@@ -290,13 +303,15 @@ public class GuideActivity extends AppCompatActivity implements
                                         JSONObject bookData = new JSONObject();
 
                                         try {
-                                            postData.put("level", level);
-                                            postData.put("shelfno", shelfNo);
-                                            postData.put("bookid", bookId);
-                                            postData.put("bookname", bookName);
+                                            bookData.put("level", level);
+                                            bookData.put("shelfno", shelfNo);
+                                            bookData.put("bookid", bookId);
+                                            bookData.put("bookname", bookName);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
+
+
 
                                         JsonObjectRequest wronglevelRequest = new JsonObjectRequest(Request.Method.POST, wronglevelUrl, bookData, new Response.Listener<JSONObject>() {
                                             @Override
@@ -329,11 +344,13 @@ public class GuideActivity extends AppCompatActivity implements
 
                                     LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
                                     View popupView = inflater.inflate(R.layout.popup3, null);
+                                    TextView popup3txt = popupView.findViewById(R.id.popup3txt);
+                                    popup3txt.setText("Your book is located at Level " + level +". Please kindly wait at Level "+ level +" staircase, where another TEMI will serve you!");
 
                                     // create the popup window
                                     int width = LinearLayout.LayoutParams.WRAP_CONTENT;
                                     int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                                    boolean focusable = true; // lets taps outside the popup also dismiss it
+                                    boolean focusable = false; // lets taps outside the popup also dismiss it
                                     final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
                                     CountDownTimer waitTimer;
@@ -372,14 +389,19 @@ public class GuideActivity extends AppCompatActivity implements
 
                         });
 
+
+
                         // inflate the layout of the popup window
                         LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
                         View popupView = inflater.inflate(R.layout.popup2, null);
+                        ImageButton back = findViewById(R.id.back);
+
+                        back.setVisibility(View.GONE);
 
                         // create the popup window
                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                        boolean focusable = true; // lets taps outside the popup also dismiss it
+                        boolean focusable = false; // lets taps outside the popup also dismiss it
                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
                         // show the popup window
@@ -425,7 +447,6 @@ public class GuideActivity extends AppCompatActivity implements
 
                 }
             }else if(vbookId != null){
-            Log.v("jin", vbookName);
 
             booknametxt = findViewById(R.id.book_name);
             bookidtxt = findViewById(R.id.book_id);
@@ -438,11 +459,13 @@ public class GuideActivity extends AppCompatActivity implements
 
             String requestUrl = "https://capstonetemi-3ec7.restdb.io/rest/book-history";
             JSONObject postData = new JSONObject();
+            Date currentTime = Calendar.getInstance().getTime();
             try {
                 postData.put("level", vlevel);
                 postData.put("shelfno", vshelfNo);
                 postData.put("bookid", vbookId);
                 postData.put("bookname", vbookName);
+                postData.put("searchedDateTime", currentTime);
             }catch (JSONException e)
             {
                 e.printStackTrace();
@@ -484,6 +507,9 @@ public class GuideActivity extends AppCompatActivity implements
                             Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                             r.play();
 
+                            lottieAV = findViewById(R.id.animationView);
+                            lottieAV.setVisibility(View.VISIBLE);
+
                             popup();
                         }
                     }
@@ -510,6 +536,7 @@ public class GuideActivity extends AppCompatActivity implements
                             // If the TEMI is not returned to the home base yet
                             if (!location.equals("home base")) {
                                 if (status.equals("complete")) {
+                                    Log.v("jin", "glitch");
                                     Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
                                     intent.putExtra("bookName", bookName);
                                     intent.putExtra("level", level);
@@ -536,7 +563,7 @@ public class GuideActivity extends AppCompatActivity implements
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
+        boolean focusable = false; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
         popupWindow.setOutsideTouchable(false);
@@ -600,6 +627,16 @@ public class GuideActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v("jin", "busy");
+        SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("busy", true);
+        editor.apply();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 //        robot.getInstance().addOnRobotReadyListener(this);
@@ -645,6 +682,7 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().removeWakeupWordListener(this);
         robot.getInstance().removeTtsListener(this);
         robot.getInstance().removeOnLocationsUpdateListener(this);
+
     }
 
     // DON'T FORGET to stop the server
@@ -652,8 +690,7 @@ public class GuideActivity extends AppCompatActivity implements
     public void onDestroy()
     {
         super.onDestroy();
-        if (server != null)
-            server.stop();
+
     }
 
     @Override
@@ -696,28 +733,7 @@ public class GuideActivity extends AppCompatActivity implements
 
     }
 
-    private class WebServer extends NanoHTTPD {
 
-        public WebServer()
-        {
-            super(portNumber);
-        }
-
-        @Override
-        public Response serve(IHTTPSession session) {
-
-            if (session.getMethod() == Method.POST) {
-
-                    return newFixedLengthResponse(Response.Status.CONFLICT, MIME_PLAINTEXT, "This Temi is currently in use, come back later!");
-            }
-
-            return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT,
-                    "The requested resource does not exist");
-
-        }
-
-
-    }
 
 }
 
