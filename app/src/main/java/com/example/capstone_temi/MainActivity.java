@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -115,6 +116,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v("jin", "notbusy");
+        SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("busy", false);
+        editor.apply();
+    }
+
     private class WebServer extends NanoHTTPD {
 
         public WebServer()
@@ -122,35 +138,59 @@ public class MainActivity extends AppCompatActivity {
             super(portNumber);
         }
 
+
+
+
         @Override
         public Response serve(IHTTPSession session) {
             if (session.getMethod() == Method.POST) {
-                try {
-                    final HashMap<String, String> map = new HashMap<String, String>();
-                    session.parseBody(map);
-                    String data = map.get("postData");
-                    Log.w("Httpd", data);
-                    JSONObject json = new JSONObject(data);
 
-                    Context ctx=getApplicationContext();
+                SharedPreferences sh = getSharedPreferences("Busy", MODE_PRIVATE);
+                Boolean isbusy = sh.getBoolean("busy", true);
 
-                    Intent intent = new Intent(ctx, GuideActivity.class);
-                    intent.putExtra("bookId", json.getString("bookid"));
-                    intent.putExtra("level", json.getString("level"));
-                    intent.putExtra("shelfNo", json.getString("shelfno"));
-                    intent.putExtra("bookName", json.getString("bookname"));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
-                    // the activity from a service
-                    intent.setAction(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                    intent.putExtra("free", false);
-                    intent.putExtra("difflevel", true);
-                    startActivity(intent);
 
-                    return newFixedLengthResponse("Request succeeded.");
-                } catch (IOException | ResponseException | JSONException e) {
-                    // handle
-                    e.printStackTrace();
+
+                if(!isbusy){
+                    // Storing data into SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
+
+                    // Creating an Editor object to edit(write to the file)
+                    SharedPreferences.Editor myEdit = sharedPreferences.edit();
+
+                    // Storing the key and its value as the data fetched from edittext
+                    myEdit.putBoolean("busy", true);
+                    myEdit.apply();
+                    Log.v("jin", "setup");
+                    try {
+                        final HashMap<String, String> map = new HashMap<String, String>();
+                        session.parseBody(map);
+                        String data = map.get("postData");
+                        Log.w("Httpd", data);
+                        JSONObject json = new JSONObject(data);
+
+                        Context ctx=getApplicationContext();
+
+                        Intent intent = new Intent(ctx, GuideActivity.class);
+                        intent.putExtra("bookId", json.getString("bookid"));
+                        intent.putExtra("level", json.getString("level"));
+                        intent.putExtra("shelfNo", json.getString("shelfno"));
+                        intent.putExtra("bookName", json.getString("bookname"));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // You need this if starting
+                        // the activity from a service
+                        intent.setAction(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                        intent.putExtra("difflevel", true);
+
+                        startActivity(intent);
+
+                        return newFixedLengthResponse("Request succeeded.");
+                    } catch (IOException | ResponseException | JSONException e) {
+                        // handle
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    return newFixedLengthResponse(Response.Status.CONFLICT, MIME_PLAINTEXT, "This Temi is currently in use, come back later!");
                 }
             }
 
