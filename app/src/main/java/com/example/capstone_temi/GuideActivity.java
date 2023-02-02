@@ -513,6 +513,7 @@ public class GuideActivity extends AppCompatActivity implements
 
     // Show popup below after reaching the shelf
     public void popup() {
+        back.setVisibility(View.GONE);
 
         // inflate the layout of the popup window
         LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
@@ -560,6 +561,7 @@ public class GuideActivity extends AppCompatActivity implements
                 answer = false;
                 Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                 if (launchIntent != null) {
+                    waitTimer.cancel();
                     startActivity(launchIntent);//null pointer check in case package name was not found
                 }
             }
@@ -570,6 +572,7 @@ public class GuideActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 answer = false;
                 Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
+                waitTimer.cancel();
                 startActivity(launchIntent);
                 popupWindow.dismiss();
                 robot.goTo("home base");

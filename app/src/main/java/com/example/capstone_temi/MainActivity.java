@@ -1,5 +1,6 @@
 package com.example.capstone_temi;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +19,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import fi.iki.elonen.NanoHTTPD;
 
+
 public class MainActivity extends AppCompatActivity {
+
 
     private WebView webView = null;
     private MainActivity.WebServer server;
