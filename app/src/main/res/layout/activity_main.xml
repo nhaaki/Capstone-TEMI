@@ -15,19 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <Button
-        android:id="@+id/dance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="584dp"
-        android:text="Dance"
-        app:layout_constraintEnd_toStartOf="@+id/webView"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageButton
         android:id="@+id/back"
         android:layout_width="50dp"
@@ -52,15 +39,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/refresh" />
 
-    <Button
+    <ImageButton
         android:id="@+id/goHome"
-        android:layout_width="99dp"
-        android:layout_height="64dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="80dp"
-        android:text="Home"
-        android:textSize="20sp"
+        android:background="#00FFFFFF"
+        android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/gohome" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
