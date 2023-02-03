@@ -312,8 +312,45 @@ public class GuideActivity extends AppCompatActivity implements
                                                 try {
                                                     String rescode = response.getString("response_code");
                                                     if (rescode.equals("409")){
-                                                        Toast.makeText(getApplicationContext(),"Temi is busy right now. Please try again!",Toast.LENGTH_LONG).show();
-                                                        showPopup3[0] = false;
+                                                        Toast.makeText(getApplicationContext(),"Temi is busy right now. Please try again later!",Toast.LENGTH_LONG).show();
+                                                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                                        startActivity(intent);
+                                                    } else {
+
+
+                                                        // After taking image and send it over to the server
+                                                        // inflate the layout of the popup3 window
+                                                        LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
+                                                        View popup3View = inflater.inflate(R.layout.popup3, null);
+                                                        TextView popup3txt = popup3View.findViewById(R.id.popup3txt);
+                                                        popup3txt.setText("Your book is located at Level " + level +". Please kindly wait at Level "+ level +" staircase, where another TEMI will serve you!");
+
+                                                        // create the popup window
+                                                        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                                        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                                        boolean focusable = false; // lets taps outside the popup also dismiss it
+                                                        final PopupWindow popupWindow = new PopupWindow(popup3View, width, height, focusable);
+
+                                                        CountDownTimer waitTimer;
+                                                        waitTimer = new CountDownTimer(3000, 1000) {
+                                                            public void onTick(long millisUntilFinished) {}
+                                                            public void onFinish() {
+                                                                // show the popup window
+                                                                // which view you pass in doesn't matter, it is only used for the window tolken
+                                                                popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
+                                                                popup3View.setOnTouchListener(new View.OnTouchListener() {
+                                                                    @Override
+                                                                    public boolean onTouch(View v, MotionEvent event) {
+                                                                        popupWindow.dismiss();
+
+                                                                        // Goes back to the main activity
+                                                                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
+                                                                        startActivity(intent);
+                                                                        return true;
+                                                                    }
+                                                                });
+                                                            }
+                                                        }.start();
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -326,42 +363,6 @@ public class GuideActivity extends AppCompatActivity implements
                                             }
                                         });
                                         nameRequestQueue.add(wronglevelRequest);
-                                    }
-                                    if (showPopup3[0] == true) {
-
-                                        // After taking image and send it over to the server
-                                        // inflate the layout of the popup3 window
-                                        LayoutInflater inflater = LayoutInflater.from(GuideActivity.this);
-                                        View popup3View = inflater.inflate(R.layout.popup3, null);
-                                        TextView popup3txt = popup3View.findViewById(R.id.popup3txt);
-                                        popup3txt.setText("Your book is located at Level " + level +". Please kindly wait at Level "+ level +" staircase, where another TEMI will serve you!");
-
-                                        // create the popup window
-                                        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                                        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                                        boolean focusable = false; // lets taps outside the popup also dismiss it
-                                        final PopupWindow popupWindow = new PopupWindow(popup3View, width, height, focusable);
-
-                                        CountDownTimer waitTimer;
-                                        waitTimer = new CountDownTimer(3000, 1000) {
-                                            public void onTick(long millisUntilFinished) {}
-                                            public void onFinish() {
-                                                // show the popup window
-                                                // which view you pass in doesn't matter, it is only used for the window tolken
-                                                popupWindow.showAtLocation(GuideActivity.this.findViewById(R.id.main), Gravity.CENTER, 0, 0);
-                                                popup3View.setOnTouchListener(new View.OnTouchListener() {
-                                                    @Override
-                                                    public boolean onTouch(View v, MotionEvent event) {
-                                                        popupWindow.dismiss();
-
-                                                        // Goes back to the main activity
-                                                        Intent intent = new Intent(GuideActivity.this, MainActivity.class);
-                                                        startActivity(intent);
-                                                        return true;
-                                                    }
-                                                });
-                                            }
-                                        }.start();
                                     }
                                 }
                             }
