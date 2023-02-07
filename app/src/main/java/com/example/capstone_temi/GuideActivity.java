@@ -82,6 +82,7 @@ public class GuideActivity extends AppCompatActivity implements
     public String shelfNo;
     public String bookId;
     public String bookName;
+    CountDownTimer waitTimer;
 
     public Robot robot;
 
@@ -99,6 +100,8 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v("jin", "on create");
 
         // Robot is busy at the moment
         SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
@@ -129,6 +132,7 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        Log.v("jin", "new intent");
         handleIntent();
     }
 
@@ -537,7 +541,7 @@ public class GuideActivity extends AppCompatActivity implements
         Button no = popupView.findViewById(R.id.no);
         answer = true;
 
-        CountDownTimer waitTimer;
+
         TextView countdown = popupView.findViewById(R.id.timer);
         waitTimer = new CountDownTimer(60000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -556,13 +560,16 @@ public class GuideActivity extends AppCompatActivity implements
             }
         }.start();
 
+
+
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 answer = false;
+                waitTimer.cancel();
                 Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                 if (launchIntent != null) {
-                    waitTimer.cancel();
+
                     startActivity(launchIntent);//null pointer check in case package name was not found
                 }
             }
@@ -587,10 +594,13 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        Log.v("jin", "on resume");
         SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("busy", true);
         editor.apply();
+
+
     }
 
     // Initialize the robot
@@ -626,6 +636,10 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
+        if(waitTimer != null){
+            waitTimer.cancel();
+            Log.v("jin", "xcghjk");
+        }
         robot.getInstance().removeNlpListener(this);
         robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
         robot.getInstance().removeOnGoToLocationStatusChangedListener(this);
@@ -638,11 +652,11 @@ public class GuideActivity extends AppCompatActivity implements
 
     // DON'T FORGET to stop the server
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
 
     }
+
 
     @Override
     public void onPublish(@NonNull ActivityStreamPublishMessage activityStreamPublishMessage) {
