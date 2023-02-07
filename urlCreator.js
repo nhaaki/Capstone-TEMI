@@ -1,7 +1,7 @@
-var bookname =  readLine("Book name: ");
-var bookshelf =  readLine("Book shelf num: ");
-var booklevel =  readLine("Book level: ");
-var bookcallnum =  readLine("Book call number: ");
+var bookname =  prompt("Book name: "); 
+var bookshelf =  prompt("Book shelf num: ");
+var booklevel =  prompt("Book level: ");
+var bookcallnum =  prompt("Book call number: ");
 
 
 var url = [];
@@ -17,4 +17,4 @@ url.push(
 );
 var finalstring = url.join("");
 
-println(finalstring)
+console.log(finalstring)
