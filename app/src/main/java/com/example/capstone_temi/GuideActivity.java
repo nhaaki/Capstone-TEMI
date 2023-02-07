@@ -48,12 +48,15 @@ import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
-import com.robotemi.sdk.map.MapDataModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,11 +74,17 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
 
+    Yaml yaml = new Yaml();
+    InputStream inputStream = this.getClass()
+            .getClassLoader()
+            .getResourceAsStream("app/src/main/res/values/config.yaml");
+    Map<String, String> obj = yaml.load(inputStream);
+
     public OnGoToLocationStatusChangedListener listerner;
-    public String goserver = "http://192.168.43.244:8080";
+    public String flaskServer = obj.get("flaskServer");
 
     // NOTE: Change this to TEMI's current level when downloading the app
-    public String levelNo = "3";
+    public String levelNo = obj.get("levelNo");
 
     // Book details
     public String level;
@@ -265,7 +274,7 @@ public class GuideActivity extends AppCompatActivity implements
 
                                     if (imageReceived != null) {
                                         // Send the image in json
-                                        String requestUrl = goserver + "/receiveimage";
+                                        String requestUrl = flaskServer + "/receiveimage";
                                         JSONObject postData = new JSONObject();
 
                                         // Encode the bitmap
@@ -298,7 +307,7 @@ public class GuideActivity extends AppCompatActivity implements
 
                                         // Make another api request to the server
                                         // The server will redirect the information to the MainActivity
-                                        String wronglevelUrl = goserver + "/wronglevel";
+                                        String wronglevelUrl = flaskServer + "/wronglevel";
                                         JSONObject bookData = new JSONObject();
                                         try {
                                             bookData.put("level", level);
