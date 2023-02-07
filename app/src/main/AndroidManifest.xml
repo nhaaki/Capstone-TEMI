@@ -52,7 +52,8 @@
             android:name=".GuideActivity"
             android:exported="true"
             android:label=""
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:finishOnTaskLaunch="true">
 
             <!-- android:launchMode="singleInstancePerTask" -->
 
