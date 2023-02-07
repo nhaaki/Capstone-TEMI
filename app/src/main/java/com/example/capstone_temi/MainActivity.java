@@ -25,18 +25,21 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView webView = null;
     private MainActivity.WebServer server;
-    public String url = "https://chen-han-np.github.io/Capstone-TEMI-Website-Demo/";
+    public String url;
     public Robot robot;
 
     public TextView name;
     public ImageButton reload;
     public ImageButton back;
     public ImageButton home;
-    public int portNumber = 8080;
+    public int portNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        url = getString(R.string.websiteUrl);
+        portNumber = Integer.parseInt(getApplicationContext().getString(R.string.portNumber));
         server = new MainActivity.WebServer();
         try {
             server.start();

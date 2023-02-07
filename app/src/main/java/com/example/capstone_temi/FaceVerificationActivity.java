@@ -46,7 +46,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
     public ActivityResultLauncher<Intent> imageActivityResultLauncher;
     public Bitmap imageReceived;
     private String currentphotopath;
-    public String goserver = "http://192.168.43.244:8080";
+    public String flaskServer;
 
     public String level;
     public String shelfNo;
@@ -56,6 +56,8 @@ public class FaceVerificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        flaskServer = getString(R.string.flaskServer);
 
         // Change the busy mode to true
         SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
@@ -101,7 +103,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
                             if (imageReceived != null) {
 
                                 // Send the second image in json
-                                String requestUrl = goserver + "/faceverification";
+                                String requestUrl = flaskServer + "/faceverification";
                                 JSONObject postData = new JSONObject();
 
                                 // Encode the bitmap

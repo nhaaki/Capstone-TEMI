@@ -74,17 +74,12 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
 
-    Yaml yaml = new Yaml();
-    InputStream inputStream = this.getClass()
-            .getClassLoader()
-            .getResourceAsStream("app/src/main/res/values/config.yaml");
-    Map<String, String> obj = yaml.load(inputStream);
 
     public OnGoToLocationStatusChangedListener listerner;
-    public String flaskServer = obj.get("flaskServer");
+    public String flaskServer;
 
     // NOTE: Change this to TEMI's current level when downloading the app
-    public String levelNo = obj.get("levelNo");
+    public String levelNo;
 
     // Book details
     public String level;
@@ -109,6 +104,8 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        flaskServer = getString(R.string.flaskServer);
+        levelNo = getString(R.string.levelNo);
 
         Log.v("jin", "on create");
 
