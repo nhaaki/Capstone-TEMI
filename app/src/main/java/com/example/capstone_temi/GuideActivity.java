@@ -518,7 +518,7 @@ public class GuideActivity extends AppCompatActivity implements
                                     intent.putExtra("bookId", bookId);
                                     robot.removeOnGoToLocationStatusChangedListener(listerner);
                                     startActivity(intent);
-                                    finish();
+
                                 }
                             }
                         }
@@ -568,7 +568,7 @@ public class GuideActivity extends AppCompatActivity implements
                         answer = false;
                         Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                         startActivity(launchIntent);
-                        finish();
+
                         popupWindow.dismiss();
                         robot.goTo("home base");
                     }
@@ -586,7 +586,7 @@ public class GuideActivity extends AppCompatActivity implements
                     if (launchIntent != null) {
 
                         startActivity(launchIntent);//null pointer check in case package name was not found
-                        finish();
+
                     }
                 }
             });
@@ -598,7 +598,7 @@ public class GuideActivity extends AppCompatActivity implements
                     Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                     waitTimer.cancel();
                     startActivity(launchIntent);
-                    finish();
+
                     popupWindow.dismiss();
                     robot.goTo("home base");
 
