@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("difflevel", true);
                         startActivity(intent);
 
+
                         // Return to the server successful message
                         return newFixedLengthResponse("Request succeeded.");
 
