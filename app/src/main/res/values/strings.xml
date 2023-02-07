@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Capstone-TEMI</string>
+    <string name="flaskServer">http://192.168.43.244:8080</string>
+    <string name="levelNo">3</string>
+    <string name="websiteUrl">https://chen-han-np.github.io/Capstone-TEMI-Website-Demo/</string>
+    <string name="portNumber">8080</string>
 </resources>

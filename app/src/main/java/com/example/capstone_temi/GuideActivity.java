@@ -74,23 +74,19 @@ public class GuideActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener
 {
 
-    Yaml yaml = new Yaml();
-    InputStream inputStream = this.getClass()
-            .getClassLoader()
-            .getResourceAsStream("app/src/main/res/values/config.yaml");
-    Map<String, String> obj = yaml.load(inputStream);
 
     public OnGoToLocationStatusChangedListener listerner;
-    public String flaskServer = obj.get("flaskServer");
+    public String flaskServer;
 
     // NOTE: Change this to TEMI's current level when downloading the app
-    public String levelNo = obj.get("levelNo");
+    public String levelNo;
 
     // Book details
     public String level;
     public String shelfNo;
     public String bookId;
     public String bookName;
+    static boolean active = false;
     CountDownTimer waitTimer;
 
     public Robot robot;
@@ -109,6 +105,9 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        active = true;
+        flaskServer = getString(R.string.flaskServer);
+        levelNo = getString(R.string.levelNo);
 
         Log.v("jin", "on create");
 
@@ -134,6 +133,7 @@ public class GuideActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 Intent intent = new Intent(GuideActivity.this, MainActivity.class);
                 startActivity(intent);
+
             }
         });
     }
@@ -141,6 +141,7 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        active = true;
         Log.v("jin", "new intent");
         handleIntent();
     }
@@ -328,6 +329,7 @@ public class GuideActivity extends AppCompatActivity implements
                                                         Toast.makeText(getApplicationContext(),"Temi is busy right now. Please try again later!",Toast.LENGTH_LONG).show();
                                                         Intent intent = new Intent(GuideActivity.this, MainActivity.class);
                                                         startActivity(intent);
+
                                                     } else {
 
 
@@ -359,6 +361,7 @@ public class GuideActivity extends AppCompatActivity implements
                                                                         // Goes back to the main activity
                                                                         Intent intent = new Intent(GuideActivity.this, MainActivity.class);
                                                                         startActivity(intent);
+
                                                                         return true;
                                                                     }
                                                                 });
@@ -515,6 +518,7 @@ public class GuideActivity extends AppCompatActivity implements
                                     intent.putExtra("bookId", bookId);
                                     robot.removeOnGoToLocationStatusChangedListener(listerner);
                                     startActivity(intent);
+                                    finish();
                                 }
                             }
                         }
@@ -527,75 +531,82 @@ public class GuideActivity extends AppCompatActivity implements
 
     // Show popup below after reaching the shelf
     public void popup() {
-        back.setVisibility(View.GONE);
+        if(active){
+            back.setVisibility(View.GONE);
 
-        // inflate the layout of the popup window
-        LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
-        View popupView = inflater.inflate(R.layout.popup, null);
+            // inflate the layout of the popup window
+            LayoutInflater inflater = LayoutInflater.from(this.getApplicationContext());
+            View popupView = inflater.inflate(R.layout.popup, null);
 
-        // create the popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = false; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+            // create the popup window
+            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            boolean focusable = false; // lets taps outside the popup also dismiss it
+            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
-        popupWindow.setOutsideTouchable(false);
-        popupWindow.setFocusable(false);
+            popupWindow.setOutsideTouchable(false);
+            popupWindow.setFocusable(false);
 
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.BOTTOM, 0, 0);
+            // show the popup window
+            // which view you pass in doesn't matter, it is only used for the window tolken
+            popupWindow.showAtLocation(this.findViewById(R.id.main), Gravity.BOTTOM, 0, 0);
 
-        Button yes = popupView.findViewById(R.id.yes);
-        Button no = popupView.findViewById(R.id.no);
-        answer = true;
+            Button yes = popupView.findViewById(R.id.yes);
+            Button no = popupView.findViewById(R.id.no);
+            answer = true;
 
 
-        TextView countdown = popupView.findViewById(R.id.timer);
-        waitTimer = new CountDownTimer(60000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                int time =  Integer.parseInt(countdown.getText().toString()) - 1;
-                countdown.setText(String.valueOf(time));
-            }
+            TextView countdown = popupView.findViewById(R.id.timer);
+            waitTimer = new CountDownTimer(60000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    int time =  Integer.parseInt(countdown.getText().toString()) - 1;
+                    countdown.setText(String.valueOf(time));
+                }
 
-            public void onFinish() {
-                if(answer == true){
+                public void onFinish() {
+                    if(answer == true){
+                        answer = false;
+                        Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
+                        startActivity(launchIntent);
+                        finish();
+                        popupWindow.dismiss();
+                        robot.goTo("home base");
+                    }
+                }
+            }.start();
+
+
+
+            yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    answer = false;
+                    waitTimer.cancel();
+                    Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
+                    if (launchIntent != null) {
+
+                        startActivity(launchIntent);//null pointer check in case package name was not found
+                        finish();
+                    }
+                }
+            });
+
+            no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     answer = false;
                     Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
+                    waitTimer.cancel();
                     startActivity(launchIntent);
+                    finish();
                     popupWindow.dismiss();
                     robot.goTo("home base");
+
                 }
-            }
-        }.start();
+            });
 
+        }
 
-
-        yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                answer = false;
-                waitTimer.cancel();
-                Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
-                if (launchIntent != null) {
-
-                    startActivity(launchIntent);//null pointer check in case package name was not found
-                }
-            }
-        });
-
-        no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                answer = false;
-                Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
-                waitTimer.cancel();
-                startActivity(launchIntent);
-                popupWindow.dismiss();
-                robot.goTo("home base");
-
-            }
-        });
 
     }
 
@@ -603,6 +614,7 @@ public class GuideActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        active = true;
         Log.v("jin", "on resume");
         SharedPreferences sharedPreferences = getSharedPreferences("Busy",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -649,6 +661,9 @@ public class GuideActivity extends AppCompatActivity implements
             waitTimer.cancel();
             Log.v("jin", "xcghjk");
         }
+
+        active = false;
+
         robot.getInstance().removeNlpListener(this);
         robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
         robot.getInstance().removeOnGoToLocationStatusChangedListener(this);
@@ -656,6 +671,8 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().removeWakeupWordListener(this);
         robot.getInstance().removeTtsListener(this);
         robot.getInstance().removeOnLocationsUpdateListener(this);
+        finish();
+
 
     }
 
