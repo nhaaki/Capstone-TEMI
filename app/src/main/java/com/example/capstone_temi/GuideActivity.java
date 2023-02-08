@@ -255,6 +255,7 @@ public class GuideActivity extends AppCompatActivity implements
 
                                 // Show the popup below
                                 popup();
+                                robot.removeOnGoToLocationStatusChangedListener(this);
                             }
                         }
                     }
@@ -490,6 +491,7 @@ public class GuideActivity extends AppCompatActivity implements
                             lottieAV.setVisibility(View.VISIBLE);
 
                             popup();
+                            robot.removeOnGoToLocationStatusChangedListener(this);
                         }
                     }
                 }
@@ -620,6 +622,7 @@ public class GuideActivity extends AppCompatActivity implements
                             if (location.equals("home base")) {
                                 if (status.equals("complete")) {
                                     finish();
+                                    robot.removeOnGoToLocationStatusChangedListener(listerner);
 
                                 }
                             }
