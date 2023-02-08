@@ -240,7 +240,7 @@ public class GuideActivity extends AppCompatActivity implements
                     public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
 
                         // If the TEMI has not returned to the home base yet
-                        if(!location.equals("home base")){
+                        if(location.equals("shelf"+shelfNo)){
                             if(status.equals("complete")){
 
                                 // TEMI does not have ringtone
@@ -477,7 +477,7 @@ public class GuideActivity extends AppCompatActivity implements
                 @Override
                 public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
                     // If the TEMI has not returned to the home base yet
-                    if(!location.equals("home base")){
+                    if(location.equals("shelf"+vshelfNo)){
                         if(status.equals("complete")){
 
                             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -509,7 +509,7 @@ public class GuideActivity extends AppCompatActivity implements
                         @Override
                         public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
                             // If the TEMI is not returned to the home base yet
-                            if (!location.equals("home base")) {
+                            if (location.equals("waitingarea")) {
                                 if (status.equals("complete")) {
                                     Intent intent = new Intent(GuideActivity.this, FaceVerificationActivity.class);
                                     intent.putExtra("bookName", bookName);
