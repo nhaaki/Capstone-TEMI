@@ -492,6 +492,7 @@ public class GuideActivity extends AppCompatActivity implements
                     }
                 }
             });
+
         }
 
         // If it is being told to wait at the waiting area (after receiving POST from server at Main Activity)
@@ -586,6 +587,7 @@ public class GuideActivity extends AppCompatActivity implements
                     if (launchIntent != null) {
 
                         startActivity(launchIntent);//null pointer check in case package name was not found
+                        finish();
 
                     }
                 }
@@ -601,6 +603,19 @@ public class GuideActivity extends AppCompatActivity implements
 
                     popupWindow.dismiss();
                     robot.goTo("home base");
+                    listerner = new OnGoToLocationStatusChangedListener() {
+                        @Override
+                        public void onGoToLocationStatusChanged(@NonNull String location, @NonNull String status, int id, @NonNull String desc) {
+                            // If the TEMI is not returned to the home base yet
+                            if (location.equals("home base")) {
+                                if (status.equals("complete")) {
+                                    finish();
+
+                                }
+                            }
+                        }
+                    };
+
 
                 }
             });
@@ -662,7 +677,7 @@ public class GuideActivity extends AppCompatActivity implements
             Log.v("jin", "xcghjk");
         }
 
-        active = false;
+
 
         robot.getInstance().removeNlpListener(this);
         robot.getInstance().removeOnBeWithMeStatusChangedListener(this);
@@ -671,7 +686,6 @@ public class GuideActivity extends AppCompatActivity implements
         robot.getInstance().removeWakeupWordListener(this);
         robot.getInstance().removeTtsListener(this);
         robot.getInstance().removeOnLocationsUpdateListener(this);
-        finish();
 
 
     }
