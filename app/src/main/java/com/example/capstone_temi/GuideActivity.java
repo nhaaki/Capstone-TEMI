@@ -81,6 +81,8 @@ public class GuideActivity extends AppCompatActivity implements
     // NOTE: Change this to TEMI's current level when downloading the app
     public String levelNo;
 
+    public Boolean cancel;
+
     // Book details
     public String level;
     public String shelfNo;
@@ -556,12 +558,18 @@ public class GuideActivity extends AppCompatActivity implements
             Button no = popupView.findViewById(R.id.no);
             answer = true;
 
+            cancel = false;
+
 
             TextView countdown = popupView.findViewById(R.id.timer);
             waitTimer = new CountDownTimer(60000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     int time =  Integer.parseInt(countdown.getText().toString()) - 1;
                     countdown.setText(String.valueOf(time));
+
+                    if(cancel){
+                        cancel();
+                    }
                 }
 
                 public void onFinish() {
@@ -581,6 +589,7 @@ public class GuideActivity extends AppCompatActivity implements
             yes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    cancel = true;
                     answer = false;
                     waitTimer.cancel();
                     Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
@@ -596,6 +605,7 @@ public class GuideActivity extends AppCompatActivity implements
             no.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    cancel = true;
                     answer = false;
                     Intent launchIntent = new Intent(GuideActivity.this, MainActivity.class);
                     waitTimer.cancel();
